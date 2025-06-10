@@ -123,6 +123,9 @@ public class CompanionService {
             case "sleep":
                 companion.sleep();
                 break;
+            case "train":
+                companion.train();
+                break;
             default:
                 throw new IllegalArgumentException("Unknown action: " + action);
         }

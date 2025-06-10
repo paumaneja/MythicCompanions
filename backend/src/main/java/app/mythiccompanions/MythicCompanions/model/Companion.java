@@ -102,4 +102,20 @@ public class Companion {
             throw new InvalidWeaponException("Weapon '" + newWeapon + "' is not allowed for species '" + this.getSpecies().getName() + "'.");
         }
     }
+
+    /**
+     * Increases the companion's skill stat through training.
+     * Training requires a weapon to be equipped and consumes energy.
+     * @throws CompanionInteractionException if no weapon is currently equipped.
+     */
+    public void train() {
+        if (this.getCurrentWeapon() == null || this.getCurrentWeapon().isEmpty()) {
+            throw new CompanionInteractionException("Cannot train without a weapon equipped.");
+        }
+
+        // Training consumes energy but increases skill and a bit of happiness
+        this.setEnergy(Math.max(this.getEnergy() - 15, 0));
+        this.setSkill(Math.min(this.getSkill() + 10, 100));
+        this.setHappiness(Math.min(this.getHappiness() + 5, 100));
+    }
 }
