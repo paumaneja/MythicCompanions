@@ -2,6 +2,7 @@ package app.mythiccompanions.MythicCompanions.controller;
 
 import app.mythiccompanions.MythicCompanions.dto.CompanionCreationRequestDTO;
 import app.mythiccompanions.MythicCompanions.dto.CompanionResponseDTO;
+import app.mythiccompanions.MythicCompanions.dto.WeaponChangeRequestDTO;
 import app.mythiccompanions.MythicCompanions.service.CompanionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -55,6 +56,19 @@ public class CompanionController {
             @AuthenticationPrincipal UserDetails userDetails) {
 
         CompanionResponseDTO updatedCompanion = companionService.performAction(companionId, action, userDetails);
+        return ResponseEntity.ok(updatedCompanion);
+    }
+
+    /**
+     * Endpoint to change a companion's weapon.
+     */
+    @PutMapping("/{companionId}/weapon")
+    public ResponseEntity<CompanionResponseDTO> changeCompanionWeapon(
+            @PathVariable Long companionId,
+            @RequestBody WeaponChangeRequestDTO request,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        CompanionResponseDTO updatedCompanion = companionService.changeWeapon(companionId, request.getWeaponName(), userDetails);
         return ResponseEntity.ok(updatedCompanion);
     }
 }

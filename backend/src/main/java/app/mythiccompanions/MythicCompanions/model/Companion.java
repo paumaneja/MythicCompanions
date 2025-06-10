@@ -88,4 +88,18 @@ public class Companion {
             throw new CompanionInteractionException("Companion is not tired enough to sleep.");
         }
     }
+
+    /**
+     * Changes the companion's current weapon.
+     * @param newWeapon The name of the new weapon to equip.
+     * @throws InvalidWeaponException if the weapon is not in the allowed list for the species.
+     */
+    public void changeWeapon(String newWeapon) {
+        // Check if the new weapon is in the list of allowed weapons for this companion's species.
+        if (this.getSpecies().getAllowedWeapons().contains(newWeapon)) {
+            this.setCurrentWeapon(newWeapon);
+        } else {
+            throw new InvalidWeaponException("Weapon '" + newWeapon + "' is not allowed for species '" + this.getSpecies().getName() + "'.");
+        }
+    }
 }

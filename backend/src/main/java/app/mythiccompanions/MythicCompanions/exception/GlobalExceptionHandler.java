@@ -57,4 +57,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleUnauthorizedOperationException(UnauthorizedOperationException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
+
+    /**
+     * Handles InvalidWeaponException and returns a 400 Bad Request.
+     * @param ex The caught InvalidWeaponException.
+     * @return A ResponseEntity with the error message and 400 status.
+     */
+    @ExceptionHandler(InvalidWeaponException.class)
+    public ResponseEntity<String> handleInvalidWeaponException(InvalidWeaponException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }

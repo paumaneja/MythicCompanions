@@ -133,4 +133,28 @@ public class CompanionService {
         // Return the mapped DTO
         return mapToResponse(updatedCompanion);
     }
+
+    /**
+     * Changes the weapon for a specific companion.
+     * Verifies that the user is the owner and the weapon is valid.
+     * @param companionId The ID of the companion.
+     * @param weaponName The name of the new weapon.
+     * @param userDetails The details of the authenticated user.
+     * @return A DTO of the companion with the updated weapon.
+     */
+    public CompanionResponseDTO changeWeapon(Long companionId, String weaponName, UserDetails userDetails) {
+        Companion companion = companionRepository.findById(companionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Companion not found with ID: " + companionId));
+
+        // Security check: ensure the user owns this companion
+        if (!companion.getOwner().getUsername().equals(userDetails.getUsername())) {
+            throw new UnauthorizedOperationException("User is not the owner of this companion.");
+        }
+
+        // Delegate the logic to the model method
+        companion.changeWeapon(weaponName);
+
+        Companion updatedCompanion = companionRepository.save(companion);
+        return mapToResponse(updatedCompanion);
+    }
 }
