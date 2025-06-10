@@ -1,5 +1,6 @@
 package app.mythiccompanions.MythicCompanions.model;
 
+import app.mythiccompanions.MythicCompanions.exception.CompanionInteractionException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -52,9 +53,39 @@ public class Companion {
     private String currentWeapon;
 
     // The user who owns this companion.
-    // Note: We might need to add the other side of this relationship in the User entity later.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User owner;
 
+
+    /**
+     * Increases the companion's hunger stat.
+     * Stats are capped at 100.
+     */
+    public void feed() {
+        this.setHunger(Math.min(this.getHunger() + 15, 100));
+        this.setHappiness(Math.min(this.getHappiness() + 5, 100));
+    }
+
+    /**
+     * Decreases energy and hunger, but increases happiness.
+     * Stats are floored at 0.
+     */
+    public void play() {
+        this.setEnergy(Math.max(this.getEnergy() - 20, 0));
+        this.setHunger(Math.max(this.getHunger() - 10, 0));
+        this.setHappiness(Math.min(this.getHappiness() + 20, 100));
+    }
+
+    /**
+     * Fully restores the companion's energy.
+     * A companion can only sleep if its energy is below a certain threshold.
+     */
+    public void sleep() {
+        if (this.getEnergy() < 50) {
+            this.setEnergy(100);
+        } else {
+            throw new CompanionInteractionException("Companion is not tired enough to sleep.");
+        }
+    }
 }

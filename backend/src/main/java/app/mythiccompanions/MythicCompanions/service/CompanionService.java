@@ -1,0 +1,136 @@
+package app.mythiccompanions.MythicCompanions.service;
+
+import app.mythiccompanions.MythicCompanions.dto.CompanionCreationRequestDTO;
+import app.mythiccompanions.MythicCompanions.dto.CompanionResponseDTO;
+import app.mythiccompanions.MythicCompanions.exception.ResourceNotFoundException;
+import app.mythiccompanions.MythicCompanions.exception.UnauthorizedOperationException;
+import app.mythiccompanions.MythicCompanions.model.Companion;
+import app.mythiccompanions.MythicCompanions.model.Species;
+import app.mythiccompanions.MythicCompanions.model.User;
+import app.mythiccompanions.MythicCompanions.repository.CompanionRepository;
+import app.mythiccompanions.MythicCompanions.repository.SpeciesRepository;
+import app.mythiccompanions.MythicCompanions.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class CompanionService {
+
+    private final CompanionRepository companionRepository;
+    private final UserRepository userRepository;
+    private final SpeciesRepository speciesRepository;
+
+    /**
+     * Creates a new companion for the currently authenticated user.
+     * @param request The request DTO containing the companion's name and species ID.
+     * @param userDetails The details of the authenticated user.
+     * @return A DTO representing the newly created companion.
+     */
+    public CompanionResponseDTO createCompanion(CompanionCreationRequestDTO request, UserDetails userDetails) {
+        // Find the owner (User) from the database using the authenticated principal's username
+        User owner = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + userDetails.getUsername()));
+
+        // Find the selected species
+        Species species = speciesRepository.findById(request.getSpeciesId())
+                .orElseThrow(() -> new ResourceNotFoundException("Species not found with ID: " + request.getSpeciesId()));
+
+        // Build the new companion with default stats
+        Companion newCompanion = Companion.builder()
+                .name(request.getName())
+                .species(species)
+                .owner(owner)
+                .health(100)
+                .hunger(100)
+                .energy(100)
+                .happiness(100)
+                .hygiene(100)
+                .skill(0)
+                .build();
+
+        Companion savedCompanion = companionRepository.save(newCompanion);
+
+        return mapToResponse(savedCompanion);
+    }
+
+    /**
+     * Retrieves all companions for a specific owner.
+     * @param ownerId The ID of the owner.
+     * @return A list of companion DTOs.
+     */
+    public List<CompanionResponseDTO> getCompanionsByOwner(Long ownerId) {
+        // Optional: You could add a check here to ensure the requesting user is the owner or an admin
+        List<Companion> companions = companionRepository.findByOwnerId(ownerId);
+        return companions.stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Helper method to map a Companion entity to a CompanionResponse DTO.
+     * @param companion The Companion entity.
+     * @return The CompanionResponse DTO.
+     */
+    private CompanionResponseDTO mapToResponse(Companion companion) {
+        return CompanionResponseDTO.builder()
+                .id(companion.getId())
+                .name(companion.getName())
+                .speciesName(companion.getSpecies().getName())
+                .universe(companion.getSpecies().getUniverse())
+                .health(companion.getHealth())
+                .hunger(companion.getHunger())
+                .energy(companion.getEnergy())
+                .happiness(companion.getHappiness())
+                .hygiene(companion.getHygiene())
+                .skill(companion.getSkill())
+                .currentWeapon(companion.getCurrentWeapon())
+                .allowedWeapons(companion.getSpecies().getAllowedWeapons())
+                .build();
+    }
+
+
+    /**
+     * Performs a specific action (feed, play, sleep) on a companion.
+     * It also verifies that the action is performed by the companion's owner.
+     * @param companionId The ID of the companion to interact with.
+     * @param action The action to perform ("feed", "play", "sleep").
+     * @param userDetails The details of the authenticated user.
+     * @return A DTO of the companion with updated stats.
+     */
+    public CompanionResponseDTO performAction(Long companionId, String action, UserDetails userDetails) {
+        // Find the companion and throw an exception if not found
+        Companion companion = companionRepository.findById(companionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Companion not found with ID: " + companionId));
+
+        // Security check: ensure the user owns this companion
+        if (!companion.getOwner().getUsername().equals(userDetails.getUsername())) {
+            throw new UnauthorizedOperationException("User is not the owner of this companion.");
+        }
+
+        // Perform the action based on the input string
+        switch (action.toLowerCase()) {
+            case "feed":
+                companion.feed();
+                break;
+            case "play":
+                companion.play();
+                break;
+            case "sleep":
+                companion.sleep();
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown action: " + action);
+        }
+
+        // Save the updated companion to the database
+        Companion updatedCompanion = companionRepository.save(companion);
+
+        // Return the mapped DTO
+        return mapToResponse(updatedCompanion);
+    }
+}

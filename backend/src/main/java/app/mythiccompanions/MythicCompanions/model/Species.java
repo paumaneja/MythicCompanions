@@ -1,5 +1,6 @@
 package app.mythiccompanions.MythicCompanions.model;
 
+import app.mythiccompanions.MythicCompanions.enums.Universe;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
