@@ -42,6 +42,10 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Companion> companions;
 
+    // Represents the user's inventory
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InventoryItem> inventoryItems;
+
 
     // --- UserDetails Methods ---
 
