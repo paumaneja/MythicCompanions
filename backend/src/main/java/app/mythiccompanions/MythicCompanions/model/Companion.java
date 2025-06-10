@@ -1,11 +1,14 @@
 package app.mythiccompanions.MythicCompanions.model;
 
 import app.mythiccompanions.MythicCompanions.exception.CompanionInteractionException;
+import app.mythiccompanions.MythicCompanions.exception.InvalidWeaponException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 /**
  * Represents an individual companion instance owned by a user.
@@ -51,6 +54,9 @@ public class Companion {
 
     @Column(nullable = false)
     private boolean sick = false;
+
+    @Column(nullable = false)
+    private LocalDateTime lastUpdated;
 
     // The currently equipped weapon.
     private String currentWeapon;
@@ -149,6 +155,37 @@ public class Companion {
             this.setHealth(100);
         } else {
             throw new CompanionInteractionException("Companion is not sick and does not need medicine.");
+        }
+    }
+
+    /**
+     * Updates the companion's stats based on the time elapsed since the last update.
+     * This simulates passive stat decay.
+     */
+    public void updateStatsOverTime() {
+        if (this.lastUpdated == null) {
+            this.lastUpdated = LocalDateTime.now();
+            return;
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        long minutesElapsed = java.time.Duration.between(this.lastUpdated, now).toMinutes();
+
+        if (minutesElapsed > 0) {
+            // Example decay rates:
+            // - Hunger decreases by 1 every 20 minutes
+            // - Happiness decreases by 1 every 30 minutes
+            // - Hygiene decreases by 1 every 60 minutes
+            int hungerDecay = (int) (minutesElapsed / 20);
+            int happinessDecay = (int) (minutesElapsed / 30);
+            int hygieneDecay = (int) (minutesElapsed / 60);
+
+            this.setHunger(Math.max(0, this.getHunger() - hungerDecay));
+            this.setHappiness(Math.max(0, this.getHappiness() - happinessDecay));
+            this.setHygiene(Math.max(0, this.getHygiene() - hygieneDecay));
+
+            // After calculating decay, update the timestamp to now.
+            this.lastUpdated = now;
         }
     }
 }

@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,6 +52,8 @@ public class CompanionService {
                 .happiness(100)
                 .hygiene(100)
                 .skill(0)
+                .sick(false)
+                .lastUpdated(LocalDateTime.now())
                 .build();
 
         Companion savedCompanion = companionRepository.save(newCompanion);
@@ -66,9 +69,30 @@ public class CompanionService {
     public List<CompanionResponseDTO> getCompanionsByOwner(Long ownerId) {
         // Optional: You could add a check here to ensure the requesting user is the owner or an admin
         List<Companion> companions = companionRepository.findByOwnerId(ownerId);
+
+        for (Companion companion : companions) {
+            companion.updateStatsOverTime();
+        }
+
+        List<Companion> updatedCompanions = companionRepository.saveAll(companions);
+
         return companions.stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Finds a companion by its ID, updates its stats based on time elapsed,
+     * saves the updated state, and returns the refreshed entity.
+     * @param companionId The ID of the companion to find and refresh.
+     * @return The refreshed Companion entity.
+     */
+    private Companion findAndRefreshCompanion(Long companionId) {
+        Companion companion = companionRepository.findById(companionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Companion not found with ID: " + companionId));
+
+        companion.updateStatsOverTime();
+        return companionRepository.save(companion);
     }
 
     /**
@@ -105,8 +129,7 @@ public class CompanionService {
      */
     public CompanionResponseDTO performAction(Long companionId, String action, UserDetails userDetails) {
         // Find the companion and throw an exception if not found
-        Companion companion = companionRepository.findById(companionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Companion not found with ID: " + companionId));
+        Companion companion = findAndRefreshCompanion(companionId);
 
         // Security check: ensure the user owns this companion
         if (!companion.getOwner().getUsername().equals(userDetails.getUsername())) {
@@ -153,8 +176,7 @@ public class CompanionService {
      * @return A DTO of the companion with the updated weapon.
      */
     public CompanionResponseDTO changeWeapon(Long companionId, String weaponName, UserDetails userDetails) {
-        Companion companion = companionRepository.findById(companionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Companion not found with ID: " + companionId));
+        Companion companion = findAndRefreshCompanion(companionId);
 
         // Security check: ensure the user owns this companion
         if (!companion.getOwner().getUsername().equals(userDetails.getUsername())) {
@@ -167,4 +189,6 @@ public class CompanionService {
         Companion updatedCompanion = companionRepository.save(companion);
         return mapToResponse(updatedCompanion);
     }
+
+
 }
