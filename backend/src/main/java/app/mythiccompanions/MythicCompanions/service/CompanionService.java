@@ -88,6 +88,7 @@ public class CompanionService {
                 .happiness(companion.getHappiness())
                 .hygiene(companion.getHygiene())
                 .skill(companion.getSkill())
+                .sick(companion.isSick())
                 .currentWeapon(companion.getCurrentWeapon())
                 .allowedWeapons(companion.getSpecies().getAllowedWeapons())
                 .build();
@@ -125,6 +126,12 @@ public class CompanionService {
                 break;
             case "train":
                 companion.train();
+                break;
+            case "clean":
+                companion.clean();
+                break;
+            case "heal":
+                companion.heal();
                 break;
             default:
                 throw new IllegalArgumentException("Unknown action: " + action);

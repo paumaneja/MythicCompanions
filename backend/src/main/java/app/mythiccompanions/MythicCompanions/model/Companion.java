@@ -49,6 +49,9 @@ public class Companion {
     @Column(nullable = false)
     private int skill = 0; // 🎓 Skill/Training (0-100)
 
+    @Column(nullable = false)
+    private boolean sick = false;
+
     // The currently equipped weapon.
     private String currentWeapon;
 
@@ -69,12 +72,20 @@ public class Companion {
 
     /**
      * Decreases energy and hunger, but increases happiness.
+     * Playing also decreases hygiene and can make the companion sick if hygiene is too low.
      * Stats are floored at 0.
      */
     public void play() {
         this.setEnergy(Math.max(this.getEnergy() - 20, 0));
         this.setHunger(Math.max(this.getHunger() - 10, 0));
         this.setHappiness(Math.min(this.getHappiness() + 20, 100));
+        this.setHygiene(Math.max(this.getHygiene() - 15, 0)); // Playing gets the companion dirty
+
+        // If hygiene drops below a threshold, the companion gets sick.
+        if (this.getHygiene() < 20) {
+            this.setSick(true);
+            this.setHealth(Math.max(this.getHealth() - 25, 0)); // Sickness also reduces health
+        }
     }
 
     /**
@@ -117,5 +128,27 @@ public class Companion {
         this.setEnergy(Math.max(this.getEnergy() - 15, 0));
         this.setSkill(Math.min(this.getSkill() + 10, 100));
         this.setHappiness(Math.min(this.getHappiness() + 5, 100));
+    }
+
+    /**
+     * Fully restores the companion's hygiene.
+     */
+    public void clean() {
+        this.setHygiene(100);
+        // Cleaning a pet also makes it a little happier.
+        this.setHappiness(Math.min(this.getHappiness() + 5, 100));
+    }
+
+    /**
+     * Heals the companion if it is sick, restoring its health.
+     * @throws CompanionInteractionException if the companion is not sick.
+     */
+    public void heal() {
+        if (this.isSick()) {
+            this.setSick(false);
+            this.setHealth(100);
+        } else {
+            throw new CompanionInteractionException("Companion is not sick and does not need medicine.");
+        }
     }
 }

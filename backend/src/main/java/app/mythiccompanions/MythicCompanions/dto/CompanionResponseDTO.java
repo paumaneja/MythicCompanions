@@ -22,6 +22,7 @@ public class CompanionResponseDTO {
     private int happiness;
     private int hygiene;
     private int skill;
+    private boolean sick;
     private String currentWeapon;
     private List<String> allowedWeapons;
 }
