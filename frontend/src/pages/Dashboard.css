@@ -1,0 +1,96 @@
+/* Contingut per a src/pages/Dashboard.css */
+.dashboard {
+  height: 100vh;
+  width: 100vw;
+  background-image: url("../assets/images/fons_api.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+/* Afegeixo aquest estil per als missatges de càrrega/error */
+.dashboard-message {
+    color: white;
+    font-size: 2rem;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    border-radius: 10px;
+}
+.dashboard-message.error {
+    color: red;
+}
+
+
+.pet-container {
+  position: relative;
+  width: 1000px;
+  border: 10px solid rgba(0, 0, 0, 1);
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.pet-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  overflow: hidden;
+  transition: transform 0.2s;
+  min-height: 250px; /* Ajustat per al formulari */
+  color: black;
+}
+
+.pet-card:hover {
+  transform: scale(1.05);
+}
+
+.pet-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.pet-card input, .pet-card select {
+  width: 90%;
+  margin: 10px;
+  padding: 10px;
+  border: 2px solid #4caf50;
+  border-radius: 5px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.create-pet-button {
+  width: 90%;
+  padding: 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 10px;
+}
+
+.create-pet-button:hover {
+  background-color: #218838;
+}

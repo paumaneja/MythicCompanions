@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -40,11 +41,11 @@ public class User implements UserDetails {
 
     // This establishes the other side of the relationship: one user can have many companions.
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Companion> companions;
+    private List<Companion> companions = new ArrayList<>();
 
     // Represents the user's inventory
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<InventoryItem> inventoryItems;
+    private List<InventoryItem> inventoryItems = new ArrayList<>();
 
 
     // --- UserDetails Methods ---
