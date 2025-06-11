@@ -1,6 +1,8 @@
 package app.mythiccompanions.MythicCompanions.controller;
 
+import app.mythiccompanions.MythicCompanions.dto.CompanionResponseDTO;
 import app.mythiccompanions.MythicCompanions.dto.InventoryItemResponseDTO;
+import app.mythiccompanions.MythicCompanions.dto.UseItemRequestDTO;
 import app.mythiccompanions.MythicCompanions.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -37,5 +39,20 @@ public class InventoryController {
             @RequestParam Long itemId,
             @RequestParam(defaultValue = "1") int quantity) {
         return ResponseEntity.ok(inventoryService.addItemToInventory(userDetails, itemId, quantity));
+    }
+
+    /**
+     * Endpoint to use a consumable item on a companion.
+     * @param inventoryItemId The ID of the item in the user's inventory.
+     * @param request The request body containing the target companion's ID.
+     */
+    @PostMapping("/use/{inventoryItemId}")
+    public ResponseEntity<CompanionResponseDTO> useItem(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long inventoryItemId,
+            @RequestBody UseItemRequestDTO request) {
+
+        CompanionResponseDTO updatedCompanion = inventoryService.useItem(userDetails, inventoryItemId, request.getCompanionId());
+        return ResponseEntity.ok(updatedCompanion);
     }
 }
