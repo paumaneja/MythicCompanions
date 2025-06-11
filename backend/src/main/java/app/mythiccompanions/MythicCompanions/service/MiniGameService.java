@@ -6,6 +6,7 @@ import app.mythiccompanions.MythicCompanions.dto.MiniGameCompletionRequestDTO;
 import app.mythiccompanions.MythicCompanions.dto.MiniGameRewardResponseDTO;
 import app.mythiccompanions.MythicCompanions.exception.ResourceNotFoundException;
 import app.mythiccompanions.MythicCompanions.exception.UnauthorizedOperationException;
+import app.mythiccompanions.MythicCompanions.mapper.CompanionMapper;
 import app.mythiccompanions.MythicCompanions.model.Companion;
 import app.mythiccompanions.MythicCompanions.model.User;
 import app.mythiccompanions.MythicCompanions.repository.CompanionRepository;
@@ -25,7 +26,6 @@ public class MiniGameService {
     private final UserRepository userRepository;
     private final CompanionRepository companionRepository;
     private final InventoryService inventoryService;
-    private final CompanionService companionService;
 
     @Transactional
     public MiniGameRewardResponseDTO completeMiniGame(UserDetails userDetails, MiniGameCompletionRequestDTO request) {
@@ -63,7 +63,7 @@ public class MiniGameService {
         }
 
         Companion updatedCompanion = companionRepository.save(companion);
-        CompanionResponseDTO companionResponse = companionService.mapToResponse(updatedCompanion);
+        CompanionResponseDTO companionResponse = CompanionMapper.mapToResponse(updatedCompanion);
 
         return MiniGameRewardResponseDTO.builder()
                 .message(message)

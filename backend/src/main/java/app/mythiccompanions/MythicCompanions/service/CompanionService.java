@@ -8,6 +8,7 @@ import app.mythiccompanions.MythicCompanions.enums.ItemType;
 import app.mythiccompanions.MythicCompanions.exception.InvalidWeaponException;
 import app.mythiccompanions.MythicCompanions.exception.ResourceNotFoundException;
 import app.mythiccompanions.MythicCompanions.exception.UnauthorizedOperationException;
+import app.mythiccompanions.MythicCompanions.mapper.CompanionMapper;
 import app.mythiccompanions.MythicCompanions.model.*;
 import app.mythiccompanions.MythicCompanions.repository.CompanionRepository;
 import app.mythiccompanions.MythicCompanions.repository.InventoryItemRepository;
@@ -63,7 +64,7 @@ public class CompanionService {
 
         Companion savedCompanion = companionRepository.save(newCompanion);
 
-        return mapToResponse(savedCompanion);
+        return CompanionMapper.mapToResponse(savedCompanion);
     }
 
     /**
@@ -82,7 +83,7 @@ public class CompanionService {
         List<Companion> updatedCompanions = companionRepository.saveAll(companions);
 
         return companions.stream()
-                .map(this::mapToResponse)
+                .map(CompanionMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
 
@@ -99,42 +100,6 @@ public class CompanionService {
         companion.updateStatsOverTime();
         return companionRepository.save(companion);
     }
-
-    /**
-     * Helper method to map a Companion entity to a CompanionResponse DTO.
-     * @param companion The Companion entity.
-     * @return The CompanionResponse DTO.
-     */
-    private CompanionResponseDTO mapToResponse(Companion companion) {
-        InventoryItemResponseDTO equippedGearResponse = null;
-        if (companion.getEquippedGear() != null) {
-            // We need a mapper for InventoryItem to InventoryItemResponse.
-            // Let's create a simple one for now.
-            Item equippedItem = companion.getEquippedGear().getItem();
-            ItemResponseDTO equippedItemResponse = ItemResponseDTO.builder()
-                    .id(equippedItem.getId()).name(equippedItem.getName()).description(equippedItem.getDescription()).itemType(equippedItem.getItemType()).build();
-            equippedGearResponse = InventoryItemResponseDTO.builder()
-                    .inventoryItemId(companion.getEquippedGear().getId()).quantity(1).item(equippedItemResponse).build();
-        }
-
-        return CompanionResponseDTO.builder()
-                .id(companion.getId())
-                .name(companion.getName())
-                .speciesName(companion.getSpecies().getName())
-                .universe(companion.getSpecies().getUniverse())
-                .health(companion.getHealth())
-                .hunger(companion.getHunger())
-                .energy(companion.getEnergy())
-                .happiness(companion.getHappiness())
-                .hygiene(companion.getHygiene())
-                .skill(companion.getSkill())
-                .sick(companion.isSick())
-                .currentWeapon(companion.getCurrentWeapon())
-                .allowedWeapons(companion.getSpecies().getAllowedWeapons())
-                .equippedGear(equippedGearResponse)
-                .build();
-    }
-
 
     /**
      * Performs a specific action (feed, play, sleep) on a companion.
@@ -181,7 +146,7 @@ public class CompanionService {
         Companion updatedCompanion = companionRepository.save(companion);
 
         // Return the mapped DTO
-        return mapToResponse(updatedCompanion);
+        return CompanionMapper.mapToResponse(updatedCompanion);
     }
 
     /**
@@ -204,7 +169,7 @@ public class CompanionService {
         companion.changeWeapon(weaponName);
 
         Companion updatedCompanion = companionRepository.save(companion);
-        return mapToResponse(updatedCompanion);
+        return CompanionMapper.mapToResponse(updatedCompanion);
     }
 
     /**
@@ -247,6 +212,6 @@ public class CompanionService {
         inventoryItemRepository.save(itemToEquip);
         Companion updatedCompanion = companionRepository.save(companion);
 
-        return mapToResponse(updatedCompanion);
+        return CompanionMapper.mapToResponse(updatedCompanion);
     }
 }
