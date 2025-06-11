@@ -25,4 +25,5 @@ public class CompanionResponseDTO {
     private boolean sick;
     private String currentWeapon;
     private List<String> allowedWeapons;
+    private InventoryItemResponseDTO equippedGear;
 }

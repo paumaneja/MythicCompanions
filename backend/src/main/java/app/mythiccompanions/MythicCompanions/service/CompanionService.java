@@ -2,17 +2,21 @@ package app.mythiccompanions.MythicCompanions.service;
 
 import app.mythiccompanions.MythicCompanions.dto.CompanionCreationRequestDTO;
 import app.mythiccompanions.MythicCompanions.dto.CompanionResponseDTO;
+import app.mythiccompanions.MythicCompanions.dto.InventoryItemResponseDTO;
+import app.mythiccompanions.MythicCompanions.dto.ItemResponseDTO;
+import app.mythiccompanions.MythicCompanions.enums.ItemType;
+import app.mythiccompanions.MythicCompanions.exception.InvalidWeaponException;
 import app.mythiccompanions.MythicCompanions.exception.ResourceNotFoundException;
 import app.mythiccompanions.MythicCompanions.exception.UnauthorizedOperationException;
-import app.mythiccompanions.MythicCompanions.model.Companion;
-import app.mythiccompanions.MythicCompanions.model.Species;
-import app.mythiccompanions.MythicCompanions.model.User;
+import app.mythiccompanions.MythicCompanions.model.*;
 import app.mythiccompanions.MythicCompanions.repository.CompanionRepository;
+import app.mythiccompanions.MythicCompanions.repository.InventoryItemRepository;
 import app.mythiccompanions.MythicCompanions.repository.SpeciesRepository;
 import app.mythiccompanions.MythicCompanions.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,6 +29,7 @@ public class CompanionService {
     private final CompanionRepository companionRepository;
     private final UserRepository userRepository;
     private final SpeciesRepository speciesRepository;
+    private final InventoryItemRepository inventoryItemRepository;
 
     /**
      * Creates a new companion for the currently authenticated user.
@@ -101,6 +106,17 @@ public class CompanionService {
      * @return The CompanionResponse DTO.
      */
     private CompanionResponseDTO mapToResponse(Companion companion) {
+        InventoryItemResponseDTO equippedGearResponse = null;
+        if (companion.getEquippedGear() != null) {
+            // We need a mapper for InventoryItem to InventoryItemResponse.
+            // Let's create a simple one for now.
+            Item equippedItem = companion.getEquippedGear().getItem();
+            ItemResponseDTO equippedItemResponse = ItemResponseDTO.builder()
+                    .id(equippedItem.getId()).name(equippedItem.getName()).description(equippedItem.getDescription()).itemType(equippedItem.getItemType()).build();
+            equippedGearResponse = InventoryItemResponseDTO.builder()
+                    .inventoryItemId(companion.getEquippedGear().getId()).quantity(1).item(equippedItemResponse).build();
+        }
+
         return CompanionResponseDTO.builder()
                 .id(companion.getId())
                 .name(companion.getName())
@@ -115,6 +131,7 @@ public class CompanionService {
                 .sick(companion.isSick())
                 .currentWeapon(companion.getCurrentWeapon())
                 .allowedWeapons(companion.getSpecies().getAllowedWeapons())
+                .equippedGear(equippedGearResponse)
                 .build();
     }
 
@@ -190,5 +207,46 @@ public class CompanionService {
         return mapToResponse(updatedCompanion);
     }
 
+    /**
+     * Equips an item from the user's inventory onto a companion.
+     */
+    @Transactional
+    public CompanionResponseDTO equipItem(UserDetails userDetails, Long companionId, Long inventoryItemId) {
+        Companion companion = findAndRefreshCompanion(companionId); // We reuse our helper method
+        User owner = companion.getOwner();
 
+        // Security check
+        if (!owner.getUsername().equals(userDetails.getUsername())) {
+            throw new UnauthorizedOperationException("User is not the owner of this companion.");
+        }
+
+        InventoryItem itemToEquip = inventoryItemRepository.findById(inventoryItemId)
+                .orElseThrow(() -> new ResourceNotFoundException("Inventory item not found with ID: " + inventoryItemId));
+
+        // Check that the user owns the item
+        if (!itemToEquip.getOwner().getId().equals(owner.getId())) {
+            throw new UnauthorizedOperationException("User does not own the item they are trying to equip.");
+        }
+
+        // Check if the item is equippable (not a consumable)
+        if (itemToEquip.getItem().getItemType() == ItemType.CONSUMABLE) {
+            throw new InvalidWeaponException("Cannot equip a consumable item."); // Reusing this exception for now
+        }
+
+        // Unequip any existing item first
+        if (companion.getEquippedGear() != null) {
+            InventoryItem currentlyEquipped = companion.getEquippedGear();
+            currentlyEquipped.setEquipped(false);
+            inventoryItemRepository.save(currentlyEquipped);
+        }
+
+        // Equip the new item
+        itemToEquip.setEquipped(true);
+        companion.setEquippedGear(itemToEquip);
+
+        inventoryItemRepository.save(itemToEquip);
+        Companion updatedCompanion = companionRepository.save(companion);
+
+        return mapToResponse(updatedCompanion);
+    }
 }

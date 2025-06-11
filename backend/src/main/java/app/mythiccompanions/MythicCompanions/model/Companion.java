@@ -66,6 +66,11 @@ public class Companion {
     @JoinColumn(name = "user_id")
     private User owner;
 
+    // Represents the item currently equipped by the companion from the owner's inventory.
+    @OneToOne
+    @JoinColumn(name = "equipped_gear_id", unique = true)
+    private InventoryItem equippedGear;
+
 
     /**
      * Increases the companion's hunger stat.

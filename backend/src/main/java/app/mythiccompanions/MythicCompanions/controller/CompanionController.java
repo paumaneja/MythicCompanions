@@ -71,4 +71,17 @@ public class CompanionController {
         CompanionResponseDTO updatedCompanion = companionService.changeWeapon(companionId, request.getWeaponName(), userDetails);
         return ResponseEntity.ok(updatedCompanion);
     }
+
+    /**
+     * Endpoint to equip an item on a companion.
+     */
+    @PostMapping("/{companionId}/equip/{inventoryItemId}")
+    public ResponseEntity<CompanionResponseDTO> equipItem(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long companionId,
+            @PathVariable Long inventoryItemId) {
+
+        CompanionResponseDTO updatedCompanion = companionService.equipItem(userDetails, companionId, inventoryItemId);
+        return ResponseEntity.ok(updatedCompanion);
+    }
 }
