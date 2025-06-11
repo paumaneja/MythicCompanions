@@ -1,8 +1,11 @@
 package app.mythiccompanions.MythicCompanions.config;
 
+import app.mythiccompanions.MythicCompanions.enums.ItemType;
 import app.mythiccompanions.MythicCompanions.enums.Universe;
+import app.mythiccompanions.MythicCompanions.model.Item;
 import app.mythiccompanions.MythicCompanions.model.Species;
 import app.mythiccompanions.MythicCompanions.repository.SpeciesRepository;
+import app.mythiccompanions.MythicCompanions.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -18,12 +21,16 @@ import java.util.List;
 public class DataLoader implements CommandLineRunner {
 
     private final SpeciesRepository speciesRepository;
+    private final ItemRepository itemRepository;
 
     @Override
     public void run(String... args) throws Exception {
         // Check if the species table is empty before populating
         if (speciesRepository.count() == 0) {
             loadSpeciesData();
+        }
+        if (itemRepository.count() == 0) {
+            loadItemData();
         }
     }
 
@@ -56,5 +63,25 @@ public class DataLoader implements CommandLineRunner {
 
         speciesRepository.saveAll(List.of(porg, ewok, hobbit, dwarf));
         System.out.println("Loaded initial species data into the database.");
+    }
+
+    private void loadItemData() {
+        Item smallHealthPotion = Item.builder()
+                .name("Small Health Potion")
+                .description("A common potion that restores a small amount of health.")
+                .itemType(ItemType.CONSUMABLE)
+                .healthBonus(25)
+                .build();
+
+        Item lembasBread = Item.builder()
+                .name("Lembas Bread")
+                .description("A single bite can fill the stomach of a grown man.")
+                .itemType(ItemType.CONSUMABLE)
+                .hungerBonus(50)
+                .energyBonus(20)
+                .build();
+
+        itemRepository.saveAll(List.of(smallHealthPotion, lembasBread));
+        System.out.println("Loaded initial item data into the database.");
     }
 }
