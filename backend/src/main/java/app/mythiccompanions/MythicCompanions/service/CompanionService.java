@@ -194,10 +194,9 @@ public class CompanionService {
      */
     @Transactional
     public CompanionResponseDTO equipItem(UserDetails userDetails, Long companionId, Long inventoryItemId) {
-        Companion companion = findAndRefreshCompanion(companionId); // We reuse our helper method
+        Companion companion = findAndRefreshCompanion(companionId);
         User owner = companion.getOwner();
 
-        // Security check
         if (!owner.getUsername().equals(userDetails.getUsername())) {
             throw new UnauthorizedOperationException("User is not the owner of this companion.");
         }
@@ -205,28 +204,44 @@ public class CompanionService {
         InventoryItem itemToEquip = inventoryItemRepository.findById(inventoryItemId)
                 .orElseThrow(() -> new ResourceNotFoundException("Inventory item not found with ID: " + inventoryItemId));
 
-        // Check that the user owns the item
         if (!itemToEquip.getOwner().getId().equals(owner.getId())) {
             throw new UnauthorizedOperationException("User does not own the item they are trying to equip.");
         }
 
-        // Check if the item is equippable (not a consumable)
         if (itemToEquip.getItem().getItemType() == ItemType.CONSUMABLE) {
-            throw new InvalidWeaponException("Cannot equip a consumable item."); // Reusing this exception for now
+            throw new InvalidWeaponException("Cannot equip a consumable item.");
         }
 
-        // Unequip any existing item first
         if (companion.getEquippedGear() != null) {
-            InventoryItem currentlyEquipped = companion.getEquippedGear();
-            currentlyEquipped.setEquipped(false);
-            inventoryItemRepository.save(currentlyEquipped);
+            // If we are trying to equip the same item again, we'll interpret it as an unequip action
+            if (companion.getEquippedGear().getId().equals(itemToEquip.getId())) {
+                companion.getEquippedGear().setEquipped(false);
+                companion.setEquippedGear(null);
+                companion.setCurrentWeapon(null);
+                Companion updatedCompanion = companionRepository.save(companion);
+                return CompanionMapper.mapToResponse(updatedCompanion);
+            }
+            // Otherwise, unequip the old item before equipping the new one
+            companion.getEquippedGear().setEquipped(false);
         }
 
         // Equip the new item
         itemToEquip.setEquipped(true);
         companion.setEquippedGear(itemToEquip);
 
-        inventoryItemRepository.save(itemToEquip);
+        // NEW LOGIC: if the item is a weapon, also set the currentWeapon field
+        if (itemToEquip.getItem().getItemType() == ItemType.WEAPON) {
+            // First check if the species can use this weapon
+            if (companion.getSpecies().getAllowedWeapons().contains(itemToEquip.getItem().getName())) {
+                companion.setCurrentWeapon(itemToEquip.getItem().getName());
+            } else {
+                // This is a safeguard, ideally the frontend would prevent this
+                throw new InvalidWeaponException("Weapon '" + itemToEquip.getItem().getName() + "' is not allowed for species '" + companion.getSpecies().getName() + "'.");
+            }
+        } else {
+            companion.setCurrentWeapon(null); // Ensure currentWeapon is null if equipping non-weapon gear
+        }
+
         Companion updatedCompanion = companionRepository.save(companion);
 
         return CompanionMapper.mapToResponse(updatedCompanion);

@@ -88,13 +88,19 @@ public class DataLoader implements CommandLineRunner {
                 .itemType(ItemType.CONSUMABLE)
                 .build();
 
+        Item practiceAxe = Item.builder()
+                .name("Practice Axe")
+                .description("A dull but sturdy axe, perfect for training.")
+                .itemType(ItemType.WEAPON)
+                .build();
+
         Item jediRobe = Item.builder()
                 .name("Miniature Jedi Robe")
                 .description("A small, brown robe suitable for a young apprentice.")
                 .itemType(ItemType.COSMETIC)
                 .build();
 
-        itemRepository.saveAll(List.of(smallHealthPotion, lembasBread, antidote, jediRobe));
+        itemRepository.saveAll(List.of(smallHealthPotion, lembasBread, antidote, practiceAxe, jediRobe));
         System.out.println("Loaded initial item data into the database.");
     }
 }

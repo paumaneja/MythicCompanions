@@ -37,29 +37,33 @@ const CompanionSanctuaryPage = () => {
   const [error, setError] = useState('');
   const [interactionMessage, setInteractionMessage] = useState('');
 
-  // Function to refetch inventory, we'll need it after using an item
   const fetchInventory = async () => {
     try {
       const inventoryResponse = await api.get('/api/inventory');
       setInventory(inventoryResponse.data);
     } catch (err) {
       console.error("Failed to refetch inventory:", err);
+      // We don't set a general error here to not override a potential companion error
     }
   };
 
   useEffect(() => {
     if (!id) return;
+
     const fetchAllData = async () => {
       try {
         setLoading(true);
         const companionPromise = api.get(`/api/companions/${id}`);
         const inventoryPromise = api.get('/api/inventory');
+        
         const [companionResponse, inventoryResponse] = await Promise.all([
           companionPromise,
           inventoryPromise,
         ]);
+
         setCompanion(companionResponse.data);
         setInventory(inventoryResponse.data);
+
       } catch (err) {
         console.error("Failed to fetch page data:", err);
         setError('Could not load page data. Please try again later.');
@@ -67,6 +71,7 @@ const CompanionSanctuaryPage = () => {
         setLoading(false);
       }
     };
+
     fetchAllData();
   }, [id]);
 
@@ -149,7 +154,6 @@ const CompanionSanctuaryPage = () => {
             </div>
             {interactionMessage && <p className="interaction-feedback">{interactionMessage}</p>}
         </div>
-
         <div className="inventory-container">
             <h2>Inventory</h2>
             {inventory.length === 0 ? (

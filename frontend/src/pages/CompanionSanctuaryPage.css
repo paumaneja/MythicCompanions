@@ -176,3 +176,21 @@ body {
   background-color: #555;
   cursor: not-allowed;
 }
+
+.equipped-item {
+  background-color: #4a5d4b;
+  color: #e0f0e0;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  text-align: center;
+  border: 1px solid #4caf50;
+}
+
+.equip-button {
+  background-color: #f0ad4e !important; /* Orange for equip */
+}
+
+.equip-button:hover:not(:disabled) {
+  background-color: #ec971f !important;
+}
