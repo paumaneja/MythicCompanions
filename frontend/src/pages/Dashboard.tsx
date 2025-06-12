@@ -4,11 +4,12 @@ import { useAuth } from '../hooks/useAuth';
 import api from '../services/api';
 import './Dashboard.css';
 
-// Type definitions for our data for type safety
+// Interfícies de tipus
 interface Companion {
   id: number;
   name: string;
   speciesName: string;
+  universe: string;
   health: number;
   hunger: number;
   energy: number;
@@ -29,7 +30,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
-  // State for the creation form
+  // Estats per al formulari de creació
   const [newCompanionName, setNewCompanionName] = useState('');
   const [selectedUniverse, setSelectedUniverse] = useState('');
   const [selectedSpeciesId, setSelectedSpeciesId] = useState('');
@@ -37,22 +38,17 @@ const Dashboard = () => {
   const auth = useAuth();
   const navigate = useNavigate();
 
-  // This effect will run once when the component mounts to fetch all necessary data
   useEffect(() => {
     if (!auth.userId) {
-      setLoading(false); // Stop loading if there is no user
+      setLoading(false);
       return;
     }
-
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Fetch both user's companions and the list of available species in parallel
         const companionsPromise = api.get(`/api/companions/owner/${auth.userId}`);
         const speciesPromise = api.get('/api/species');
-        
         const [companionsResponse, speciesResponse] = await Promise.all([companionsPromise, speciesPromise]);
-
         setCompanions(companionsResponse.data);
         setSpeciesList(speciesResponse.data);
       } catch (err) {
@@ -62,17 +58,15 @@ const Dashboard = () => {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [auth.userId]);
 
-  // --- Logic for dependent dropdowns ---
   const universes = [...new Set(speciesList.map(s => s.universe))];
   const filteredSpecies = selectedUniverse ? speciesList.filter(s => s.universe === selectedUniverse) : [];
   
   const handleUniverseChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedUniverse(e.target.value);
-    setSelectedSpeciesId(''); // Reset species selection when universe changes
+    setSelectedSpeciesId('');
   };
   
   const handleCreateCompanion = async () => {
@@ -80,15 +74,12 @@ const Dashboard = () => {
       alert('Please provide a name and select a species.');
       return;
     }
-
     try {
       const response = await api.post('/api/companions', {
         name: newCompanionName,
         speciesId: Number(selectedSpeciesId)
       });
-      // Add the new companion to the list in the UI without needing a full refresh
       setCompanions(prevCompanions => [...prevCompanions, response.data]);
-      // Reset form fields
       setNewCompanionName('');
       setSelectedUniverse('');
       setSelectedSpeciesId('');
@@ -107,17 +98,21 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard">
-      <div className="pet-container">
+      <button onClick={() => auth.logout()} className="logout-button">
+          Logout
+      </button>
+
+      <div className="companion-container"> {/* <-- Canviat de pet-container */}
         {companions.map((companion) => (
-          <div key={companion.id} className="pet-card" onClick={() => handleCompanionClick(companion.id)}>
-            <h2 className="pet-name">{companion.name}</h2>
+          <div key={companion.id} className="companion-card" onClick={() => handleCompanionClick(companion.id)}> {/* <-- Canviat de pet-card */}
+            <h2 className="companion-name">{companion.name}</h2> {/* <-- Canviat de pet-name */}
             <p style={{color:'black'}}>({companion.speciesName})</p>
           </div>
         ))}
         
         {/* Creation Card */}
-        <div className="pet-card">
-          <h2 className="pet-name">Create a New Companion</h2>
+        <div className="companion-card"> {/* <-- Canviat de pet-card */}
+          <h2 className="companion-name">Create a New Companion</h2> {/* <-- Canviat de pet-name */}
           <input
             type="text"
             placeholder="Companion Name"
@@ -125,7 +120,7 @@ const Dashboard = () => {
             onChange={(e) => setNewCompanionName(e.target.value)}
           />
 
-          <select value={selectedUniverse} onChange={handleUniverseChange} className="pet-type-select">
+          <select value={selectedUniverse} onChange={handleUniverseChange} className="companion-type-select"> {/* <-- Canviat de pet-type-select */}
             <option value="" disabled>1. Select a Universe</option>
             {universes.map(universe => (
               <option key={universe} value={universe}>{universe.replace('_', ' ')}</option>
@@ -136,7 +131,7 @@ const Dashboard = () => {
             value={selectedSpeciesId} 
             onChange={(e) => setSelectedSpeciesId(e.target.value)} 
             disabled={!selectedUniverse}
-            className="pet-type-select"
+            className="companion-type-select" /* <-- Canviat de pet-type-select */
           >
             <option value="" disabled>2. Select a Species</option>
             {filteredSpecies.map(species => (
@@ -144,7 +139,7 @@ const Dashboard = () => {
             ))}
           </select>
 
-          <button onClick={handleCreateCompanion} className="create-pet-button">Create Companion</button>
+          <button onClick={handleCreateCompanion} className="create-companion-button">Create Companion</button> {/* <-- Canviat de create-pet-button */}
         </div>
       </div>
     </div>

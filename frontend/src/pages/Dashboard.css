@@ -1,4 +1,3 @@
-/* Contingut per a src/pages/Dashboard.css */
 .dashboard {
   height: 100vh;
   width: 100vw;
@@ -12,7 +11,6 @@
   position: relative;
 }
 
-/* Afegeixo aquest estil per als missatges de càrrega/error */
 .dashboard-message {
     color: white;
     font-size: 2rem;
@@ -24,8 +22,25 @@
     color: red;
 }
 
+.logout-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  z-index: 10;
+}
 
-.pet-container {
+.logout-button:hover {
+  background-color: #d32f2f;
+}
+
+.companion-container {
   position: relative;
   width: 1000px;
   border: 10px solid rgba(0, 0, 0, 1);
@@ -40,7 +55,7 @@
   overflow-y: auto;
 }
 
-.pet-card {
+.companion-card {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -51,15 +66,15 @@
   padding: 15px;
   overflow: hidden;
   transition: transform 0.2s;
-  min-height: 250px; /* Ajustat per al formulari */
+  min-height: 250px;
   color: black;
 }
 
-.pet-card:hover {
+.companion-card:hover {
   transform: scale(1.05);
 }
 
-.pet-name {
+.companion-name {
   font-size: 1.5rem;
   font-weight: bold;
   text-align: center;
@@ -68,7 +83,7 @@
   margin-bottom: 10px;
 }
 
-.pet-card input, .pet-card select {
+.companion-card input, .companion-card select {
   width: 90%;
   margin: 10px;
   padding: 10px;
@@ -78,7 +93,7 @@
   box-sizing: border-box;
 }
 
-.create-pet-button {
+.create-companion-button {
   width: 90%;
   padding: 10px;
   background-color: #28a745;
@@ -91,6 +106,6 @@
   margin-top: 10px;
 }
 
-.create-pet-button:hover {
+.create-companion-button:hover {
   background-color: #218838;
 }
