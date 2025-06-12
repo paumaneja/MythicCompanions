@@ -45,7 +45,7 @@ public class User implements UserDetails {
 
     // Represents the user's inventory
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<InventoryItem> inventoryItems = new ArrayList<>();
+    private List<InventoryItem> inventoryItems = new ArrayList<>(); 
 
 
     // --- UserDetails Methods ---
