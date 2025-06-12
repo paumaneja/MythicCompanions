@@ -88,6 +88,26 @@ public class CompanionService {
     }
 
     /**
+     * Retrieves a single companion by its ID, after verifying ownership.
+     * Also updates its stats over time before returning.
+     * @param companionId The ID of the companion to retrieve.
+     * @param userDetails The details of the authenticated user to verify ownership.
+     * @return A DTO of the requested companion.
+     */
+    public CompanionResponseDTO getCompanionById(Long companionId, UserDetails userDetails) {
+        // We use the helper method we already have to find and refresh stats
+        Companion companion = findAndRefreshCompanion(companionId);
+
+        // Security check: ensure the user making the request is the owner
+        if (!companion.getOwner().getUsername().equals(userDetails.getUsername())) {
+            throw new UnauthorizedOperationException("User is not the owner of this companion.");
+        }
+
+        // Map the refreshed companion to a DTO and return it
+        return CompanionMapper.mapToResponse(companion);
+    }
+
+    /**
      * Finds a companion by its ID, updates its stats based on time elapsed,
      * saves the updated state, and returns the refreshed entity.
      * @param companionId The ID of the companion to find and refresh.

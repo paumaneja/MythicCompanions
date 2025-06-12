@@ -44,6 +44,18 @@ public class CompanionController {
         return ResponseEntity.ok(companions);
     }
 
+    /**
+     * Endpoint to get a single companion by its ID.
+     * Ownership is verified in the service layer.
+     */
+    @GetMapping("/{companionId}")
+    public ResponseEntity<CompanionResponseDTO> getCompanionById(
+            @PathVariable Long companionId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        CompanionResponseDTO companion = companionService.getCompanionById(companionId, userDetails);
+        return ResponseEntity.ok(companion);
+    }
 
     /**
      * Endpoint to perform an action on a companion.

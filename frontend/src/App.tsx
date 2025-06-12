@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import Dashboard from './pages/Dashboard';
+import CompanionSanctuaryPage from './pages/CompanionSanctuaryPage';
 
 
 function App() {
@@ -10,7 +11,7 @@ function App() {
         <Route path="/" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        {/* <Route path="/companion/:id" element={<CompanionSanctuaryPage />} /> */}
+        <Route path="/companions/:id" element={<CompanionSanctuaryPage />} />
     </Routes>
   );
 }
