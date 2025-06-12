@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../services/api';
-import './CompanionSanctuaryPage.css'; // We will create this file
+import './CompanionSanctuaryPage.css';
+import { isAxiosError } from 'axios';
 
-// This interface should be identical to the one in the Dashboard
 interface Companion {
   id: number;
   name: string;
@@ -17,50 +17,97 @@ interface Companion {
   skill: number;
   sick: boolean;
 }
+interface Item {
+  id: number;
+  name: string;
+  description: string;
+  itemType: 'CONSUMABLE' | 'WEAPON' | 'ARMOR' | 'COSMETIC';
+}
+interface InventoryItem {
+  inventoryItemId: number;
+  quantity: number;
+  item: Item;
+}
 
 const CompanionSanctuaryPage = () => {
   const { id } = useParams<{ id: string }>();
   const [companion, setCompanion] = useState<Companion | null>(null);
+  const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [interactionMessage, setInteractionMessage] = useState(''); // For user feedback
+  const [interactionMessage, setInteractionMessage] = useState('');
+
+  // Function to refetch inventory, we'll need it after using an item
+  const fetchInventory = async () => {
+    try {
+      const inventoryResponse = await api.get('/api/inventory');
+      setInventory(inventoryResponse.data);
+    } catch (err) {
+      console.error("Failed to refetch inventory:", err);
+    }
+  };
 
   useEffect(() => {
     if (!id) return;
-
-    const fetchCompanionData = async () => {
+    const fetchAllData = async () => {
       try {
         setLoading(true);
-        const response = await api.get(`/api/companions/${id}`);
-        setCompanion(response.data);
+        const companionPromise = api.get(`/api/companions/${id}`);
+        const inventoryPromise = api.get('/api/inventory');
+        const [companionResponse, inventoryResponse] = await Promise.all([
+          companionPromise,
+          inventoryPromise,
+        ]);
+        setCompanion(companionResponse.data);
+        setInventory(inventoryResponse.data);
       } catch (err) {
-        console.error("Failed to fetch companion data:", err);
-        setError('Could not load your companion. Please try again later.');
+        console.error("Failed to fetch page data:", err);
+        setError('Could not load page data. Please try again later.');
       } finally {
         setLoading(false);
       }
     };
-
-    fetchCompanionData();
+    fetchAllData();
   }, [id]);
 
-  // Function to handle interactions
   const handleInteract = async (action: string) => {
     if (!id) return;
     try {
-      // Give instant feedback to the user
       setInteractionMessage(`Performing action: ${action}...`);
-      
       const response = await api.put(`/api/companions/${id}/interact?action=${action}`);
-      
-      // Update the companion state with the new data from the backend
       setCompanion(response.data);
       setInteractionMessage(`${action} successful!`);
-    } catch (err: any) {
+    } catch (err) {
       console.error(`Failed to perform action: ${action}`, err);
-      // Display specific error from backend if available
-      const errorMessage = err.response?.data || `Failed to perform ${action}.`;
+      let errorMessage = `Failed to perform ${action}.`;
+      if (isAxiosError(err) && err.response) {
+        errorMessage = err.response.data || errorMessage;
+      }
       setInteractionMessage(errorMessage);
+    }
+  };
+
+  const handleUseItem = async (inventoryItemId: number) => {
+    if (!id) return;
+    try {
+        setInteractionMessage(`Using item...`);
+        const response = await api.post(`/api/inventory/use/${inventoryItemId}`, {
+            companionId: id 
+        });
+        
+        setCompanion(response.data);
+
+        await fetchInventory();
+
+        setInteractionMessage(`Item used successfully!`);
+
+    } catch(err) {
+        console.error("Failed to use item", err);
+        let errorMessage = "Failed to use item.";
+        if (isAxiosError(err) && err.response) {
+            errorMessage = err.response.data || errorMessage;
+        }
+        setInteractionMessage(errorMessage);
     }
   };
 
@@ -69,41 +116,61 @@ const CompanionSanctuaryPage = () => {
   if (!companion) return <div className="sanctuary-message">Companion not found.</div>;
 
   return (
-    <div className="sanctuary-container">
-      <Link to="/dashboard" className="back-to-dashboard">
-        &larr; Back to Dashboard
-      </Link>
-      <div className="sanctuary-header">
-        <h1>{companion.name}'s Sanctuary</h1>
-        <p>Species: {companion.speciesName} ({companion.universe.replace('_', ' ')})</p>
-      </div>
+    <div className="sanctuary-page-layout">
+        <div className="sanctuary-container">
+            <Link to="/dashboard" className="back-to-dashboard">
+                &larr; Back to Dashboard
+            </Link>
+            <div className="sanctuary-header">
+                <h1>{companion.name}'s Sanctuary</h1>
+                <p>Species: {companion.speciesName} ({companion.universe.replace('_', ' ')})</p>
+            </div>
+            <div className="stats-container">
+                <h2>Stats</h2>
+                <ul>
+                    <li>❤️ Health: {companion.health} / 100</li>
+                    <li>🍗 Hunger: {companion.hunger} / 100</li>
+                    <li>😴 Energy: {companion.energy} / 100</li>
+                    <li>😊 Happiness: {companion.happiness} / 100</li>
+                    <li>🧼 Hygiene: {companion.hygiene} / 100</li>
+                    <li>🎓 Skill: {companion.skill} / 100</li>
+                    <li style={{ color: companion.sick ? 'red' : 'inherit' }}>
+                        🤒 Sick: {companion.sick ? 'Yes' : 'No'}
+                    </li>
+                </ul>
+            </div>
+            <div className="actions-container">
+                <h2>Actions</h2>
+                <button onClick={() => handleInteract('feed')}>Feed</button>
+                <button onClick={() => handleInteract('play')}>Play</button>
+                <button onClick={() => handleInteract('sleep')}>Sleep</button>
+                <button onClick={() => handleInteract('clean')}>Clean</button>
+                <button onClick={() => handleInteract('train')}>Train</button>
+            </div>
+            {interactionMessage && <p className="interaction-feedback">{interactionMessage}</p>}
+        </div>
 
-      <div className="stats-container">
-        <h2>Stats</h2>
-        <ul>
-          <li>❤️ Health: {companion.health} / 100</li>
-          <li>🍗 Hunger: {companion.hunger} / 100</li>
-          <li>😴 Energy: {companion.energy} / 100</li>
-          <li>😊 Happiness: {companion.happiness} / 100</li>
-          <li>🧼 Hygiene: {companion.hygiene} / 100</li>
-          <li>🎓 Skill: {companion.skill} / 100</li>
-          <li style={{ color: companion.sick ? 'red' : 'inherit' }}>
-            🤒 Sick: {companion.sick ? 'Yes' : 'No'}
-          </li>
-        </ul>
-      </div>
-
-      <div className="actions-container">
-        <h2>Actions</h2>
-        <button onClick={() => handleInteract('feed')}>Feed</button>
-        <button onClick={() => handleInteract('play')}>Play</button>
-        <button onClick={() => handleInteract('sleep')}>Sleep</button>
-        <button onClick={() => handleInteract('clean')}>Clean</button>
-        <button onClick={() => handleInteract('train')}>Train</button>
-        <button onClick={() => handleInteract('heal')}>Heal</button>
-      </div>
-      
-      {interactionMessage && <p className="interaction-feedback">{interactionMessage}</p>}
+        <div className="inventory-container">
+            <h2>Inventory</h2>
+            {inventory.length === 0 ? (
+                <p>Your inventory is empty.</p>
+            ) : (
+                inventory.map((invItem) => (
+                    <div key={invItem.inventoryItemId} className="inventory-item">
+                        <div className="item-info">
+                            <strong>{invItem.item.name} (x{invItem.quantity})</strong>
+                            <p>{invItem.item.description}</p>
+                        </div>
+                        <button 
+                            onClick={() => handleUseItem(invItem.inventoryItemId)}
+                            disabled={invItem.item.itemType !== 'CONSUMABLE'}
+                        >
+                            Use
+                        </button>
+                    </div>
+                ))
+            )}
+        </div>
     </div>
   );
 };

@@ -151,19 +151,6 @@ public class Companion {
     }
 
     /**
-     * Heals the companion if it is sick, restoring its health.
-     * @throws CompanionInteractionException if the companion is not sick.
-     */
-    public void heal() {
-        if (this.isSick()) {
-            this.setSick(false);
-            this.setHealth(100);
-        } else {
-            throw new CompanionInteractionException("Companion is not sick and does not need medicine.");
-        }
-    }
-
-    /**
      * Updates the companion's stats based on the time elapsed since the last update.
      * This simulates passive stat decay.
      */

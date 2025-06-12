@@ -136,6 +136,17 @@ public class InventoryService {
             throw new UnauthorizedOperationException("User is not the owner of this companion.");
         }
 
+        if ("Antidote".equals(itemToUse.getName())) {
+            if (companion.isSick()) {
+                companion.setSick(false);
+                // Optional: give a small happiness boost for being cured
+                companion.setHappiness(Math.min(100, companion.getHappiness() + 10));
+            } else {
+                // Prevent using antidote on a healthy companion
+                throw new CompanionInteractionException("This companion is not sick.");
+            }
+        }
+
         // Apply item effects
         if (itemToUse.getHealthBonus() != null) {
             companion.setHealth(Math.min(100, companion.getHealth() + itemToUse.getHealthBonus()));
@@ -150,22 +161,16 @@ public class InventoryService {
             companion.setHappiness(Math.min(100, companion.getHappiness() + itemToUse.getHappinessBonus()));
         }
 
-        // Update inventory quantity
         inventoryItem.setQuantity(inventoryItem.getQuantity() - 1);
 
         if (inventoryItem.getQuantity() <= 0) {
-            // If quantity is zero or less, remove the item from the inventory
             inventoryItemRepository.delete(inventoryItem);
         } else {
-            // Otherwise, just save the updated quantity
             inventoryItemRepository.save(inventoryItem);
         }
 
         Companion updatedCompanion = companionRepository.save(companion);
 
-        // We need a mapper from Companion to CompanionResponse. Let's borrow it from CompanionService.
-        // For a cleaner architecture, this mapper could be in a separate class.
-        // For now, let's just create it here for simplicity.
         return mapCompanionToResponse(updatedCompanion);
     }
 

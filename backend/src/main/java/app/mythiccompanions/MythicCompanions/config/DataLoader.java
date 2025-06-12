@@ -82,13 +82,19 @@ public class DataLoader implements CommandLineRunner {
                 .energyBonus(20)
                 .build();
 
+        Item antidote = Item.builder()
+                .name("Antidote")
+                .description("A simple remedy that cures sickness.")
+                .itemType(ItemType.CONSUMABLE)
+                .build();
+
         Item jediRobe = Item.builder()
                 .name("Miniature Jedi Robe")
                 .description("A small, brown robe suitable for a young apprentice.")
                 .itemType(ItemType.COSMETIC)
                 .build();
 
-        itemRepository.saveAll(List.of(smallHealthPotion, lembasBread, jediRobe));
+        itemRepository.saveAll(List.of(smallHealthPotion, lembasBread, antidote, jediRobe));
         System.out.println("Loaded initial item data into the database.");
     }
 }

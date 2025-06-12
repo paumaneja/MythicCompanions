@@ -155,9 +155,6 @@ public class CompanionService {
             case "clean":
                 companion.clean();
                 break;
-            case "heal":
-                companion.heal();
-                break;
             default:
                 throw new IllegalArgumentException("Unknown action: " + action);
         }
