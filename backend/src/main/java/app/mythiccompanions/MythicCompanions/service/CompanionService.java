@@ -212,12 +212,13 @@ public class CompanionService {
             throw new InvalidWeaponException("Cannot equip a consumable item.");
         }
 
+        // Unequip any existing item first
         if (companion.getEquippedGear() != null) {
             // If we are trying to equip the same item again, we'll interpret it as an unequip action
             if (companion.getEquippedGear().getId().equals(itemToEquip.getId())) {
                 companion.getEquippedGear().setEquipped(false);
                 companion.setEquippedGear(null);
-                companion.setCurrentWeapon(null);
+                companion.setCurrentWeapon(null); // Clear current weapon
                 Companion updatedCompanion = companionRepository.save(companion);
                 return CompanionMapper.mapToResponse(updatedCompanion);
             }
@@ -229,15 +230,10 @@ public class CompanionService {
         itemToEquip.setEquipped(true);
         companion.setEquippedGear(itemToEquip);
 
-        // NEW LOGIC: if the item is a weapon, also set the currentWeapon field
+        // if the item is a weapon, also set the currentWeapon string field
         if (itemToEquip.getItem().getItemType() == ItemType.WEAPON) {
-            // First check if the species can use this weapon
-            if (companion.getSpecies().getAllowedWeapons().contains(itemToEquip.getItem().getName())) {
-                companion.setCurrentWeapon(itemToEquip.getItem().getName());
-            } else {
-                // This is a safeguard, ideally the frontend would prevent this
-                throw new InvalidWeaponException("Weapon '" + itemToEquip.getItem().getName() + "' is not allowed for species '" + companion.getSpecies().getName() + "'.");
-            }
+            // The logic to check if the weapon is allowed for the species is in the changeWeapon method
+            companion.changeWeapon(itemToEquip.getItem().getName());
         } else {
             companion.setCurrentWeapon(null); // Ensure currentWeapon is null if equipping non-weapon gear
         }

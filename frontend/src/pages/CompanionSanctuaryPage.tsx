@@ -4,6 +4,7 @@ import api from '../services/api';
 import './CompanionSanctuaryPage.css';
 import { isAxiosError } from 'axios';
 
+
 interface Companion {
   id: number;
   name: string;
@@ -16,6 +17,7 @@ interface Companion {
   hygiene: number;
   skill: number;
   sick: boolean;
+  equippedGear: InventoryItem | null; 
 }
 interface Item {
   id: number;
@@ -37,33 +39,19 @@ const CompanionSanctuaryPage = () => {
   const [error, setError] = useState('');
   const [interactionMessage, setInteractionMessage] = useState('');
 
-  const fetchInventory = async () => {
-    try {
-      const inventoryResponse = await api.get('/api/inventory');
-      setInventory(inventoryResponse.data);
-    } catch (err) {
-      console.error("Failed to refetch inventory:", err);
-      // We don't set a general error here to not override a potential companion error
-    }
-  };
-
   useEffect(() => {
-    if (!id) return;
-
     const fetchAllData = async () => {
+      if (!id) return;
       try {
         setLoading(true);
         const companionPromise = api.get(`/api/companions/${id}`);
         const inventoryPromise = api.get('/api/inventory');
-        
         const [companionResponse, inventoryResponse] = await Promise.all([
           companionPromise,
           inventoryPromise,
         ]);
-
         setCompanion(companionResponse.data);
         setInventory(inventoryResponse.data);
-
       } catch (err) {
         console.error("Failed to fetch page data:", err);
         setError('Could not load page data. Please try again later.');
@@ -83,15 +71,15 @@ const CompanionSanctuaryPage = () => {
       setCompanion(response.data);
       setInteractionMessage(`${action} successful!`);
     } catch (err) {
-      console.error(`Failed to perform action: ${action}`, err);
       let errorMessage = `Failed to perform ${action}.`;
       if (isAxiosError(err) && err.response) {
         errorMessage = err.response.data || errorMessage;
       }
       setInteractionMessage(errorMessage);
+      console.error(`Failed to perform action: ${action}`, err);
     }
   };
-
+  
   const handleUseItem = async (inventoryItemId: number) => {
     if (!id) return;
     try {
@@ -99,22 +87,39 @@ const CompanionSanctuaryPage = () => {
         const response = await api.post(`/api/inventory/use/${inventoryItemId}`, {
             companionId: id 
         });
-        
         setCompanion(response.data);
-
-        await fetchInventory();
-
+        const inventoryResponse = await api.get('/api/inventory');
+        setInventory(inventoryResponse.data);
         setInteractionMessage(`Item used successfully!`);
-
     } catch(err) {
-        console.error("Failed to use item", err);
         let errorMessage = "Failed to use item.";
         if (isAxiosError(err) && err.response) {
             errorMessage = err.response.data || errorMessage;
         }
         setInteractionMessage(errorMessage);
+        console.error("Failed to use item", err);
     }
   };
+
+  const handleEquipItem = async (inventoryItemId: number) => {
+    if (!id) return;
+    try {
+      setInteractionMessage('Equipping item...');
+      const response = await api.post(`/api/companions/${id}/equip/${inventoryItemId}`);
+      setCompanion(response.data);
+      const inventoryResponse = await api.get('/api/inventory');
+      setInventory(inventoryResponse.data);
+      setInteractionMessage('Item equip status changed!');
+    } catch (err) {
+      console.error("Failed to equip item", err);
+      let errorMessage = "Failed to equip item.";
+      if (isAxiosError(err) && err.response) {
+          errorMessage = err.response.data || errorMessage;
+      }
+      setInteractionMessage(errorMessage);
+    }
+  };
+
 
   if (loading) return <div className="sanctuary-message">Loading Sanctuary...</div>;
   if (error) return <div className="sanctuary-message error">{error}</div>;
@@ -132,6 +137,9 @@ const CompanionSanctuaryPage = () => {
             </div>
             <div className="stats-container">
                 <h2>Stats</h2>
+                <div className="equipped-item">
+                    <strong>Equipped:</strong> {companion.equippedGear ? companion.equippedGear.item.name : 'None'}
+                </div>
                 <ul>
                     <li>❤️ Health: {companion.health} / 100</li>
                     <li>🍗 Hunger: {companion.hunger} / 100</li>
@@ -156,24 +164,23 @@ const CompanionSanctuaryPage = () => {
         </div>
         <div className="inventory-container">
             <h2>Inventory</h2>
-            {inventory.length === 0 ? (
-                <p>Your inventory is empty.</p>
-            ) : (
-                inventory.map((invItem) => (
-                    <div key={invItem.inventoryItemId} className="inventory-item">
-                        <div className="item-info">
-                            <strong>{invItem.item.name} (x{invItem.quantity})</strong>
-                            <p>{invItem.item.description}</p>
-                        </div>
-                        <button 
-                            onClick={() => handleUseItem(invItem.inventoryItemId)}
-                            disabled={invItem.item.itemType !== 'CONSUMABLE'}
-                        >
+            {inventory.length === 0 ? <p>Your inventory is empty.</p> : inventory.map((invItem) => (
+                <div key={invItem.inventoryItemId} className="inventory-item">
+                    <div className="item-info">
+                        <strong>{invItem.item.name} (x{invItem.quantity})</strong>
+                        <p>{invItem.item.description}</p>
+                    </div>
+                    {invItem.item.itemType === 'CONSUMABLE' ? (
+                        <button onClick={() => handleUseItem(invItem.inventoryItemId)}>
                             Use
                         </button>
-                    </div>
-                ))
-            )}
+                    ) : (
+                        <button className="equip-button" onClick={() => handleEquipItem(invItem.inventoryItemId)}>
+                            {companion.equippedGear?.inventoryItemId === invItem.inventoryItemId ? 'Unequip' : 'Equip'}
+                        </button>
+                    )}
+                </div>
+            ))}
         </div>
     </div>
   );

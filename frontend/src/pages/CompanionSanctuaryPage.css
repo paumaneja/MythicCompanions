@@ -194,3 +194,28 @@ body {
 .equip-button:hover:not(:disabled) {
   background-color: #ec971f !important;
 }
+
+/* Add these styles to the end of CompanionSanctuaryPage.css */
+
+.equipped-item {
+  background-color: #4a5d4b;
+  color: #e0f0e0;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  text-align: center;
+  border: 1px solid #4caf50;
+}
+
+.equip-button {
+  background-color: #f0ad4e !important; /* Orange for equip */
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.equip-button:hover:not(:disabled) {
+  background-color: #ec971f !important;
+}
