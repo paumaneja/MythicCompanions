@@ -154,6 +154,9 @@ const CompanionSanctuaryPage = () => {
   return (
     <div className="sanctuary-page-layout">
       <div className="main-visual-container">
+        <Link to="/dashboard" className="back-to-dashboard" title="Back to Dashboard">
+          <img src="/icons/back.png" alt="Back" />
+        </Link>
         {currentVideo ? (
           <video
             key={currentVideo}
@@ -188,9 +191,6 @@ const CompanionSanctuaryPage = () => {
       
       <div className="ui-container">
         <div className="sanctuary-container">
-            <Link to="/dashboard" className="back-to-dashboard">
-                &larr; Back to Dashboard
-            </Link>
             <div className="sanctuary-header">
                 <h1>{companion.name}'s Sanctuary</h1>
                 <p>Species: {companion.speciesName} ({companion.universe.replace('_', ' ')})</p>

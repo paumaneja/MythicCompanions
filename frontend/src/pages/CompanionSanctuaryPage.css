@@ -89,13 +89,25 @@
   position: absolute;
   top: 20px;
   left: 20px;
-  color: #a0a0a0;
-  text-decoration: none;
-  font-size: 14px;
+  z-index: 10; /* Ensures it's above the main image/video */
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s ease-in-out;
 }
 
 .back-to-dashboard:hover {
-  color: #fff;
+  background-color: rgba(0, 0, 0, 0.8);
+  transform: scale(1.1);
+}
+
+.back-to-dashboard img {
+  width: 50%;
+  height: 50%;
 }
 
 .sanctuary-header {
