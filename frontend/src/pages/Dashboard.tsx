@@ -4,7 +4,6 @@ import { useAuth } from '../hooks/useAuth';
 import api from '../services/api';
 import './Dashboard.css';
 
-// Interfícies de tipus
 interface Companion {
   id: number;
   name: string;
@@ -17,7 +16,10 @@ interface Companion {
   hygiene: number;
   skill: number;
   sick: boolean;
+  equippedGear: { item: { name: string } } | null; 
+  speciesAssets: { [key: string]: string }; 
 }
+
 interface Species {
     id: number;
     name: string;
@@ -29,8 +31,7 @@ const Dashboard = () => {
   const [speciesList, setSpeciesList] = useState<Species[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  
-  // Estats per al formulari de creació
+
   const [newCompanionName, setNewCompanionName] = useState('');
   const [selectedUniverse, setSelectedUniverse] = useState('');
   const [selectedSpeciesId, setSelectedSpeciesId] = useState('');
@@ -43,6 +44,7 @@ const Dashboard = () => {
       setLoading(false);
       return;
     }
+
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -58,22 +60,24 @@ const Dashboard = () => {
         setLoading(false);
       }
     };
+
     fetchData();
   }, [auth.userId]);
 
   const universes = [...new Set(speciesList.map(s => s.universe))];
   const filteredSpecies = selectedUniverse ? speciesList.filter(s => s.universe === selectedUniverse) : [];
-  
+
   const handleUniverseChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedUniverse(e.target.value);
     setSelectedSpeciesId('');
   };
-  
+
   const handleCreateCompanion = async () => {
     if (!newCompanionName || !selectedSpeciesId) {
       alert('Please provide a name and select a species.');
       return;
     }
+
     try {
       const response = await api.post('/api/companions', {
         name: newCompanionName,
@@ -102,44 +106,59 @@ const Dashboard = () => {
           Logout
       </button>
 
-      <div className="companion-container"> {/* <-- Canviat de pet-container */}
-        {companions.map((companion) => (
-          <div key={companion.id} className="companion-card" onClick={() => handleCompanionClick(companion.id)}> {/* <-- Canviat de pet-card */}
-            <h2 className="companion-name">{companion.name}</h2> {/* <-- Canviat de pet-name */}
-            <p style={{color:'black'}}>({companion.speciesName})</p>
-          </div>
-        ))}
-        
-        {/* Creation Card */}
-        <div className="companion-card"> {/* <-- Canviat de pet-card */}
-          <h2 className="companion-name">Create a New Companion</h2> {/* <-- Canviat de pet-name */}
+      <div className="companion-container">
+        {companions.map((companion) => {
+            let imageUrl = '/images/placeholder.png';
+            if (companion.speciesAssets) {
+                const defaultImage = companion.speciesAssets['image_default'];
+                let equippedImage = null;
+
+                if (companion.equippedGear && companion.equippedGear.item) {
+                    const weaponKey = `image_weapon_${companion.equippedGear.item.name.replace(/ /g, '_')}`;
+                    equippedImage = companion.speciesAssets[weaponKey];
+                }
+
+                const filename = equippedImage || defaultImage;
+                if (filename) {
+                    imageUrl = `/images/${filename}`;
+                }
+            }
+
+            return (
+                <div key={companion.id} className="companion-card" onClick={() => handleCompanionClick(companion.id)}>
+                    <img src={imageUrl} alt={companion.speciesName} className="companion-image" />
+                    <h2 className="companion-name">{companion.name}</h2>
+                    <p style={{color:'black'}}>({companion.speciesName})</p>
+                </div>
+            );
+        })}
+
+        <div className="companion-card">
+          <h2 className="companion-name">Create a New Companion</h2>
           <input
             type="text"
             placeholder="Companion Name"
             value={newCompanionName}
             onChange={(e) => setNewCompanionName(e.target.value)}
           />
-
-          <select value={selectedUniverse} onChange={handleUniverseChange} className="companion-type-select"> {/* <-- Canviat de pet-type-select */}
+          <select value={selectedUniverse} onChange={handleUniverseChange} className="companion-type-select">
             <option value="" disabled>1. Select a Universe</option>
             {universes.map(universe => (
               <option key={universe} value={universe}>{universe.replace('_', ' ')}</option>
             ))}
           </select>
-
           <select 
             value={selectedSpeciesId} 
             onChange={(e) => setSelectedSpeciesId(e.target.value)} 
             disabled={!selectedUniverse}
-            className="companion-type-select" /* <-- Canviat de pet-type-select */
+            className="companion-type-select"
           >
             <option value="" disabled>2. Select a Species</option>
             {filteredSpecies.map(species => (
               <option key={species.id} value={species.id}>{species.name}</option>
             ))}
           </select>
-
-          <button onClick={handleCreateCompanion} className="create-companion-button">Create Companion</button> {/* <-- Canviat de create-pet-button */}
+          <button onClick={handleCreateCompanion} className="create-companion-button">Create Companion</button>
         </div>
       </div>
     </div>

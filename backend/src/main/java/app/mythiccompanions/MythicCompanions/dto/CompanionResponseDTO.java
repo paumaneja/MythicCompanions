@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * DTO for representing a companion in API responses.
@@ -26,4 +27,5 @@ public class CompanionResponseDTO {
     private String currentWeapon;
     private List<String> allowedWeapons;
     private InventoryItemResponseDTO equippedGear;
+    private Map<String, String> speciesAssets;
 }

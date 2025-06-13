@@ -4,7 +4,18 @@ import api from '../services/api';
 import './CompanionSanctuaryPage.css';
 import { isAxiosError } from 'axios';
 
-
+// Define interfaces
+interface Item {
+  id: number;
+  name: string;
+  description: string;
+  itemType: 'CONSUMABLE' | 'WEAPON' | 'ARMOR' | 'COSMETIC';
+}
+interface InventoryItem {
+  inventoryItemId: number;
+  quantity: number;
+  item: Item;
+}
 interface Companion {
   id: number;
   name: string;
@@ -17,18 +28,8 @@ interface Companion {
   hygiene: number;
   skill: number;
   sick: boolean;
-  equippedGear: InventoryItem | null; 
-}
-interface Item {
-  id: number;
-  name: string;
-  description: string;
-  itemType: 'CONSUMABLE' | 'WEAPON' | 'ARMOR' | 'COSMETIC';
-}
-interface InventoryItem {
-  inventoryItemId: number;
-  quantity: number;
-  item: Item;
+  equippedGear: InventoryItem | null;
+  speciesAssets: { [key: string]: string };
 }
 
 const CompanionSanctuaryPage = () => {
@@ -38,6 +39,7 @@ const CompanionSanctuaryPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [interactionMessage, setInteractionMessage] = useState('');
+  const [currentVideo, setCurrentVideo] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -63,8 +65,22 @@ const CompanionSanctuaryPage = () => {
     fetchAllData();
   }, [id]);
 
-  const handleInteract = async (action: string) => {
-    if (!id) return;
+const handleInteract = async (action: string) => {
+    if (!id || !companion || !companion.speciesAssets) return;
+
+    let videoKey = `video_action_${action}`;
+    if (companion.equippedGear?.item.itemType === 'WEAPON') {
+        const weaponVideoKey = `video_action_${action}_${companion.equippedGear.item.name.replace(/ /g, '_')}`;
+        if (companion.speciesAssets[weaponVideoKey]) {
+            videoKey = weaponVideoKey;
+        }
+    }
+    
+    const videoFilename = companion.speciesAssets[videoKey];
+    if (videoFilename) {
+        setCurrentVideo(`/videos/${videoFilename}`);
+    }
+
     try {
       setInteractionMessage(`Performing action: ${action}...`);
       const response = await api.put(`/api/companions/${id}/interact?action=${action}`);
@@ -79,54 +95,82 @@ const CompanionSanctuaryPage = () => {
       console.error(`Failed to perform action: ${action}`, err);
     }
   };
-  
+
   const handleUseItem = async (inventoryItemId: number) => {
     if (!id) return;
     try {
-        setInteractionMessage(`Using item...`);
-        const response = await api.post(`/api/inventory/use/${inventoryItemId}`, {
-            companionId: id 
-        });
-        setCompanion(response.data);
-        const inventoryResponse = await api.get('/api/inventory');
-        setInventory(inventoryResponse.data);
-        setInteractionMessage(`Item used successfully!`);
+      setInteractionMessage(`Using item...`);
+      const response = await api.post(`/api/inventory/use/${inventoryItemId}`, { companionId: id });
+      setCompanion(response.data);
+      const inventoryResponse = await api.get('/api/inventory');
+      setInventory(inventoryResponse.data);
+      setInteractionMessage(`Item used successfully!`);
     } catch(err) {
-        let errorMessage = "Failed to use item.";
-        if (isAxiosError(err) && err.response) {
-            errorMessage = err.response.data || errorMessage;
-        }
-        setInteractionMessage(errorMessage);
-        console.error("Failed to use item", err);
+      let errorMessage = "Failed to use item.";
+      if (isAxiosError(err) && err.response) {
+          errorMessage = err.response.data || errorMessage;
+      }
+      setInteractionMessage(errorMessage);
+      console.error("Failed to use item", err);
     }
   };
 
   const handleEquipItem = async (inventoryItemId: number) => {
     if (!id) return;
     try {
-      setInteractionMessage('Equipping item...');
+      setInteractionMessage('Changing equipment...');
       const response = await api.post(`/api/companions/${id}/equip/${inventoryItemId}`);
       setCompanion(response.data);
       const inventoryResponse = await api.get('/api/inventory');
       setInventory(inventoryResponse.data);
-      setInteractionMessage('Item equip status changed!');
+      setInteractionMessage('Equipment status changed!');
     } catch (err) {
-      console.error("Failed to equip item", err);
-      let errorMessage = "Failed to equip item.";
+      let errorMessage = "Failed to change equipment.";
       if (isAxiosError(err) && err.response) {
           errorMessage = err.response.data || errorMessage;
       }
       setInteractionMessage(errorMessage);
+      console.error("Failed to equip item", err);
     }
   };
-
 
   if (loading) return <div className="sanctuary-message">Loading Sanctuary...</div>;
   if (error) return <div className="sanctuary-message error">{error}</div>;
   if (!companion) return <div className="sanctuary-message">Companion not found.</div>;
 
+  let idleImageUrl = '/images/placeholder.png';
+  if (companion && companion.speciesAssets) {
+    const defaultImage = companion.speciesAssets['image_default'];
+    let equippedImage = null;
+    if (companion.equippedGear) {
+        const key = `image_weapon_${companion.equippedGear.item.name.replace(/ /g, '_')}`;
+        equippedImage = companion.speciesAssets[key];
+    }
+    const filename = equippedImage || defaultImage;
+    if(filename) {
+      idleImageUrl = `/images/${filename}`;
+    }
+  }
+
   return (
     <div className="sanctuary-page-layout">
+      <div className="main-visual-container">
+        {currentVideo ? (
+          <video
+            key={currentVideo}
+            width="100%"
+            autoPlay
+            onEnded={() => setCurrentVideo(null)}
+          >
+            <source src={currentVideo} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        ) : (
+          <img src={idleImageUrl} alt={companion.name} className="companion-main-image" />
+        )}
+      </div>
+
+      <div className="ui-container">
         <div className="sanctuary-container">
             <Link to="/dashboard" className="back-to-dashboard">
                 &larr; Back to Dashboard
@@ -162,6 +206,7 @@ const CompanionSanctuaryPage = () => {
             </div>
             {interactionMessage && <p className="interaction-feedback">{interactionMessage}</p>}
         </div>
+
         <div className="inventory-container">
             <h2>Inventory</h2>
             {inventory.length === 0 ? <p>Your inventory is empty.</p> : inventory.map((invItem) => (
@@ -182,6 +227,7 @@ const CompanionSanctuaryPage = () => {
                 </div>
             ))}
         </div>
+      </div>
     </div>
   );
 };

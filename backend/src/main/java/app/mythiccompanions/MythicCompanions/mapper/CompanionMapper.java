@@ -42,6 +42,7 @@ public class CompanionMapper {
                 .currentWeapon(companion.getCurrentWeapon())
                 .equippedGear(equippedGearResponse)
                 .allowedWeapons(companion.getSpecies().getAllowedWeapons())
+                .speciesAssets(companion.getSpecies().getAssets())
                 .build();
     }
 
