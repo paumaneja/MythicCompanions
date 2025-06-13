@@ -4,7 +4,6 @@ import api from '../services/api';
 import './CompanionSanctuaryPage.css';
 import { isAxiosError } from 'axios';
 
-// Define interfaces
 interface Item {
   id: number;
   name: string;
@@ -65,7 +64,7 @@ const CompanionSanctuaryPage = () => {
     fetchAllData();
   }, [id]);
 
-const handleInteract = async (action: string) => {
+  const handleInteract = async (action: string) => {
     if (!id || !companion || !companion.speciesAssets) return;
 
     let videoKey = `video_action_${action}`;
@@ -133,13 +132,13 @@ const handleInteract = async (action: string) => {
       console.error("Failed to equip item", err);
     }
   };
-
+  
   if (loading) return <div className="sanctuary-message">Loading Sanctuary...</div>;
   if (error) return <div className="sanctuary-message error">{error}</div>;
   if (!companion) return <div className="sanctuary-message">Companion not found.</div>;
 
   let idleImageUrl = '/images/placeholder.png';
-  if (companion && companion.speciesAssets) {
+  if (companion.speciesAssets) {
     const defaultImage = companion.speciesAssets['image_default'];
     let equippedImage = null;
     if (companion.equippedGear) {
@@ -168,8 +167,25 @@ const handleInteract = async (action: string) => {
         ) : (
           <img src={idleImageUrl} alt={companion.name} className="companion-main-image" />
         )}
+        <div className="actions-container">
+          <button onClick={() => handleInteract('feed')} title="Feed">
+            <img src="/icons/feed.png" alt="Feed" />
+          </button>
+          <button onClick={() => handleInteract('play')} title="Play">
+            <img src="/icons/play.png" alt="Play" />
+          </button>
+          <button onClick={() => handleInteract('sleep')} title="Sleep">
+            <img src="/icons/sleep.png" alt="Sleep" />
+          </button>
+          <button onClick={() => handleInteract('clean')} title="Clean">
+            <img src="/icons/clean.png" alt="Clean" />
+          </button>
+          <button onClick={() => handleInteract('train')} title="Train">
+            <img src="/icons/train.png" alt="Train" />
+          </button>
+        </div>
       </div>
-
+      
       <div className="ui-container">
         <div className="sanctuary-container">
             <Link to="/dashboard" className="back-to-dashboard">
@@ -195,14 +211,6 @@ const handleInteract = async (action: string) => {
                         🤒 Sick: {companion.sick ? 'Yes' : 'No'}
                     </li>
                 </ul>
-            </div>
-            <div className="actions-container">
-                <h2>Actions</h2>
-                <button onClick={() => handleInteract('feed')}>Feed</button>
-                <button onClick={() => handleInteract('play')}>Play</button>
-                <button onClick={() => handleInteract('sleep')}>Sleep</button>
-                <button onClick={() => handleInteract('clean')}>Clean</button>
-                <button onClick={() => handleInteract('train')}>Train</button>
             </div>
             {interactionMessage && <p className="interaction-feedback">{interactionMessage}</p>}
         </div>

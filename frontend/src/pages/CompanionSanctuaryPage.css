@@ -1,5 +1,3 @@
-/* Full content for CompanionSanctuaryPage.css */
-
 .sanctuary-page-layout {
   display: flex;
   justify-content: center;
@@ -12,6 +10,7 @@
 }
 
 .main-visual-container {
+  position: relative;
   width: 800px;
   height: 600px;
   background-color: #000;
@@ -45,7 +44,45 @@
   color: #fff;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  position: relative; /* Needed for the back button */
+  position: relative;
+}
+
+.actions-container {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 15px;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 10px 20px;
+  border-radius: 20px;
+  backdrop-filter: blur(5px);
+}
+
+.actions-container button {
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  padding: 0;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.actions-container button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+  border-color: #fff;
+}
+
+.actions-container button img {
+  width: 60%;
+  height: 60%;
 }
 
 .back-to-dashboard {
@@ -78,7 +115,7 @@
   color: #ccc;
 }
 
-.stats-container h2, .actions-container h2, .inventory-container h2 {
+.stats-container h2, .inventory-container h2 {
   text-align: center;
   color: #4caf50;
   border-bottom: 1px solid #444;
@@ -109,34 +146,12 @@
   border: 1px solid #4caf50;
 }
 
-.actions-container {
-  margin-top: 20px;
-  text-align: center;
-}
-
-.actions-container button {
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  margin: 5px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.2s, transform 0.2s;
-}
-
-.actions-container button:hover {
-  background-color: #45a049;
-  transform: scale(1.05);
-}
-
 .interaction-feedback {
   text-align: center;
   margin-top: 20px;
   font-weight: bold;
   height: 20px;
-  color: #ffeb3b; /* Yellow for feedback */
+  color: #ffeb3b;
 }
 
 .inventory-item {

@@ -31,7 +31,7 @@ const Dashboard = () => {
   const [speciesList, setSpeciesList] = useState<Species[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
+  
   const [newCompanionName, setNewCompanionName] = useState('');
   const [selectedUniverse, setSelectedUniverse] = useState('');
   const [selectedSpeciesId, setSelectedSpeciesId] = useState('');
@@ -66,12 +66,12 @@ const Dashboard = () => {
 
   const universes = [...new Set(speciesList.map(s => s.universe))];
   const filteredSpecies = selectedUniverse ? speciesList.filter(s => s.universe === selectedUniverse) : [];
-
+  
   const handleUniverseChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedUniverse(e.target.value);
     setSelectedSpeciesId('');
   };
-
+  
   const handleCreateCompanion = async () => {
     if (!newCompanionName || !selectedSpeciesId) {
       alert('Please provide a name and select a species.');
@@ -132,7 +132,7 @@ const Dashboard = () => {
                 </div>
             );
         })}
-
+        
         <div className="companion-card">
           <h2 className="companion-name">Create a New Companion</h2>
           <input
