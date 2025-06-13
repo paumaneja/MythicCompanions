@@ -165,17 +165,96 @@ const CompanionSanctuaryPage = () => {
                 <div className="equipped-item">
                     <strong>Equipped:</strong> {companion.equippedGear ? companion.equippedGear.item.name : 'None'}
                 </div>
-                <ul>
-                    <li>❤️ Health: {companion.health} / 100</li>
-                    <li>🍗 Hunger: {companion.hunger} / 100</li>
-                    <li>😴 Energy: {companion.energy} / 100</li>
-                    <li>😊 Happiness: {companion.happiness} / 100</li>
-                    <li>🧼 Hygiene: {companion.hygiene} / 100</li>
-                    <li>🎓 Skill: {companion.skill} / 100</li>
-                    <li style={{ color: companion.sick ? 'red' : 'inherit' }}>
-                        🤒 Sick: {companion.sick ? 'Yes' : 'No'}
-                    </li>
-                </ul>
+              <ul>
+                  {/* Health */}
+                  <li className="stat-item">
+                      <div className="stat-info">
+                          <span>❤️ Health</span>
+                          <span>{companion.health}/100</span>
+                      </div>
+                      <div className="stat-bar-background">
+                          <div 
+                              className="stat-bar-fill health" 
+                              style={{ width: `${companion.health}%` }}
+                          ></div>
+                      </div>
+                  </li>
+
+                  {/* Hunger */}
+                  <li className="stat-item">
+                      <div className="stat-info">
+                          <span>🍗 Hunger</span>
+                          <span>{companion.hunger}/100</span>
+                      </div>
+                      <div className="stat-bar-background">
+                          <div 
+                              className="stat-bar-fill hunger" 
+                              style={{ width: `${companion.hunger}%` }}
+                          ></div>
+                      </div>
+                  </li>
+
+                  {/* Energy */}
+                  <li className="stat-item">
+                      <div className="stat-info">
+                          <span>😴 Energy</span>
+                          <span>{companion.energy}/100</span>
+                      </div>
+                      <div className="stat-bar-background">
+                          <div 
+                              className="stat-bar-fill energy" 
+                              style={{ width: `${companion.energy}%` }}
+                          ></div>
+                      </div>
+                  </li>
+
+                  {/* Happiness */}
+                  <li className="stat-item">
+                      <div className="stat-info">
+                          <span>😊 Happiness</span>
+                          <span>{companion.happiness}/100</span>
+                      </div>
+                      <div className="stat-bar-background">
+                          <div 
+                              className="stat-bar-fill happiness" 
+                              style={{ width: `${companion.happiness}%` }}
+                          ></div>
+                      </div>
+                  </li>
+
+                  {/* Hygiene */}
+                  <li className="stat-item">
+                      <div className="stat-info">
+                          <span>🧼 Hygiene</span>
+                          <span>{companion.hygiene}/100</span>
+                      </div>
+                      <div className="stat-bar-background">
+                          <div 
+                              className="stat-bar-fill hygiene" 
+                              style={{ width: `${companion.hygiene}%` }}
+                          ></div>
+                      </div>
+                  </li>
+
+                  {/* Skill */}
+                  <li className="stat-item">
+                      <div className="stat-info">
+                          <span>🎓 Skill</span>
+                          <span>{companion.skill}/100</span>
+                      </div>
+                      <div className="stat-bar-background">
+                          <div 
+                              className="stat-bar-fill skill" 
+                              style={{ width: `${companion.skill}%` }}
+                          ></div>
+                      </div>
+                  </li>
+
+                  {/* Sick status doesn't need a bar */}
+                  <li className="stat-item" style={{ color: companion.sick ? '#f87171' : 'inherit', backgroundColor: '#3a3a3a', padding: '10px', borderRadius: '5px' }}>
+                      🤒 Sick: {companion.sick ? 'Yes' : 'No'}
+                  </li>
+              </ul>
             </div>
             {interactionMessage && <p className="interaction-feedback">{interactionMessage}</p>}
         </div>
