@@ -153,44 +153,9 @@ const CompanionSanctuaryPage = () => {
 
   return (
     <div className="sanctuary-page-layout">
-      <div className="main-visual-container">
-        <Link to="/dashboard" className="back-to-dashboard" title="Back to Dashboard">
-          <img src="/icons/back.png" alt="Back" />
-        </Link>
-        {currentVideo ? (
-          <video
-            key={currentVideo}
-            width="100%"
-            autoPlay
-            onEnded={() => setCurrentVideo(null)}
-          >
-            <source src={currentVideo} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        ) : (
-          <img src={idleImageUrl} alt={companion.name} className="companion-main-image" />
-        )}
-        <div className="actions-container">
-          <button onClick={() => handleInteract('feed')} title="Feed">
-            <img src="/icons/feed.png" alt="Feed" />
-          </button>
-          <button onClick={() => handleInteract('play')} title="Play">
-            <img src="/icons/play.png" alt="Play" />
-          </button>
-          <button onClick={() => handleInteract('sleep')} title="Sleep">
-            <img src="/icons/sleep.png" alt="Sleep" />
-          </button>
-          <button onClick={() => handleInteract('clean')} title="Clean">
-            <img src="/icons/clean.png" alt="Clean" />
-          </button>
-          <button onClick={() => handleInteract('train')} title="Train">
-            <img src="/icons/train.png" alt="Train" />
-          </button>
-        </div>
-      </div>
-      
-      <div className="ui-container">
-        <div className="sanctuary-container">
+        
+        {/* --- Column 1: Stats Panel --- */}
+        <div className="ui-panel">
             <div className="sanctuary-header">
                 <h1>{companion.name}'s Sanctuary</h1>
                 <p>Species: {companion.speciesName} ({companion.universe.replace('_', ' ')})</p>
@@ -215,27 +180,66 @@ const CompanionSanctuaryPage = () => {
             {interactionMessage && <p className="interaction-feedback">{interactionMessage}</p>}
         </div>
 
-        <div className="inventory-container">
-            <h2>Inventory</h2>
-            {inventory.length === 0 ? <p>Your inventory is empty.</p> : inventory.map((invItem) => (
-                <div key={invItem.inventoryItemId} className="inventory-item">
-                    <div className="item-info">
-                        <strong>{invItem.item.name} (x{invItem.quantity})</strong>
-                        <p>{invItem.item.description}</p>
-                    </div>
-                    {invItem.item.itemType === 'CONSUMABLE' ? (
-                        <button onClick={() => handleUseItem(invItem.inventoryItemId)}>
-                            Use
-                        </button>
-                    ) : (
-                        <button className="equip-button" onClick={() => handleEquipItem(invItem.inventoryItemId)}>
-                            {companion.equippedGear?.inventoryItemId === invItem.inventoryItemId ? 'Unequip' : 'Equip'}
-                        </button>
-                    )}
-                </div>
-            ))}
+        {/* --- Column 2: Main Visual with Icon Buttons --- */}
+        <div className="main-visual-container">
+            <Link to="/dashboard" className="back-to-dashboard" title="Back to Dashboard">
+                <img src="/icons/back.png" alt="Back" />
+            </Link>
+            {currentVideo ? (
+              <video
+                key={currentVideo}
+                width="100%"
+                autoPlay
+                onEnded={() => setCurrentVideo(null)}
+              >
+                <source src={currentVideo} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            ) : (
+              <img src={idleImageUrl} alt={companion.name} className="companion-main-image" />
+            )}
+            <div className="actions-container-icons">
+              <button onClick={() => handleInteract('feed')} title="Feed">
+                <img src="/icons/feed.png" alt="Feed" />
+              </button>
+              <button onClick={() => handleInteract('play')} title="Play">
+                <img src="/icons/play.png" alt="Play" />
+              </button>
+              <button onClick={() => handleInteract('sleep')} title="Sleep">
+                <img src="/icons/sleep.png" alt="Sleep" />
+              </button>
+              <button onClick={() => handleInteract('clean')} title="Clean">
+                <img src="/icons/clean.png" alt="Clean" />
+              </button>
+              <button onClick={() => handleInteract('train')} title="Train">
+                <img src="/icons/train.png" alt="Train" />
+              </button>
+            </div>
         </div>
-      </div>
+      
+        {/* --- Column 3: Inventory Panel --- */}
+        <div className="ui-panel">
+            <div className="inventory-container">
+                <h2>Inventory</h2>
+                {inventory.length === 0 ? <p>Your inventory is empty.</p> : inventory.map((invItem) => (
+                    <div key={invItem.inventoryItemId} className="inventory-item">
+                        <div className="item-info">
+                            <strong>{invItem.item.name} (x{invItem.quantity})</strong>
+                            <p>{invItem.item.description}</p>
+                        </div>
+                        {invItem.item.itemType === 'CONSUMABLE' ? (
+                            <button onClick={() => handleUseItem(invItem.inventoryItemId)}>
+                                Use
+                            </button>
+                        ) : (
+                            <button className="equip-button" onClick={() => handleEquipItem(invItem.inventoryItemId)}>
+                                {companion.equippedGear?.inventoryItemId === invItem.inventoryItemId ? 'Unequip' : 'Equip'}
+                            </button>
+                        )}
+                    </div>
+                ))}
+            </div>
+        </div>
     </div>
   );
 };
