@@ -1,6 +1,5 @@
-import { createContext, useState, type ReactNode, useEffect } from 'react';
+import { createContext, useState, type ReactNode, useEffect, useRef, useCallback } from 'react';
 
-// Define the shape of the context data
 interface AuthContextType {
   token: string | null;
   userId: string | null;
@@ -10,16 +9,56 @@ interface AuthContextType {
   logout: () => void;
 }
 
-// Create and EXPORT the context so other files (like our hook) can use it.
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// The provider component that will wrap our application.
+const INACTIVITY_TIMEOUT = 5 * 60 * 1000;
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
 
-  // On initial load, try to get data from localStorage.
+  const inactivityTimer = useRef<number | null>(null);
+
+  const isAuthenticated = !!token;
+
+  const logout = useCallback(() => {
+    if (inactivityTimer.current) {
+      window.clearTimeout(inactivityTimer.current);
+    }
+    localStorage.clear();
+    setToken(null);
+    setUserId(null);
+    setRole(null);
+    window.location.href = '/';
+  }, []);
+
+  const resetInactivityTimer = useCallback(() => {
+    if (inactivityTimer.current) {
+      window.clearTimeout(inactivityTimer.current);
+    }
+    inactivityTimer.current = window.setTimeout(logout, INACTIVITY_TIMEOUT);
+  }, [logout]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const events: (keyof WindowEventMap)[] = [
+        'mousedown', 'mousemove', 'keydown', 'touchstart', 'scroll'
+      ];
+
+      resetInactivityTimer();
+
+      events.forEach(event => window.addEventListener(event, resetInactivityTimer));
+
+      return () => {
+        events.forEach(event => window.removeEventListener(event, resetInactivityTimer));
+        if (inactivityTimer.current) {
+          window.clearTimeout(inactivityTimer.current);
+        }
+      };
+    }
+  }, [isAuthenticated, resetInactivityTimer]);
+
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
     const storedUserId = localStorage.getItem('userId');
@@ -31,8 +70,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const isAuthenticated = !!token;
-
   const login = (newToken: string, newUserId: string, newRole: string) => {
     localStorage.setItem('token', newToken);
     localStorage.setItem('userId', newUserId);
@@ -40,14 +77,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setToken(newToken);
     setUserId(newUserId);
     setRole(newRole);
-  };
-
-  const logout = () => {
-    localStorage.clear();
-    setToken(null);
-    setUserId(null);
-    setRole(null);
-    window.location.href = '/';
   };
 
   return (
