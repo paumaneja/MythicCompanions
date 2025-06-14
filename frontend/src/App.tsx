@@ -3,7 +3,8 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import Dashboard from './pages/Dashboard';
 import CompanionSanctuaryPage from './pages/CompanionSanctuaryPage';
-import ProtectedRoute from './components/ProtectedRoute'; // Import our new component
+import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedLayout from './components/ProtectedLayout';
 
 function App() {
   return (
@@ -14,11 +15,13 @@ function App() {
 
         {/* --- Protected Routes --- */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/companions/:id" element={<CompanionSanctuaryPage />} />
+          <Route element={<ProtectedLayout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/companions/:id" element={<CompanionSanctuaryPage />} />
+            {/* If you add more protected pages, add them here */}
+          </Route>
         </Route>
 
-        {/* A catch-all route to redirect any unknown URL to the home page */}
         <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

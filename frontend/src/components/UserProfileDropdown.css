@@ -1,0 +1,92 @@
+.user-profile-dropdown {
+  position: relative;
+}
+
+.profile-button {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.profile-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.profile-button img {
+  width: 50%;
+  height: 50%;
+  filter: invert(1); /* Makes a black icon white */
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background-color: #2d2d2d;
+  border: 1px solid #444;
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  width: 220px;
+  z-index: 1000;
+  overflow: hidden;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #444;
+}
+
+.dropdown-header p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #aaa;
+}
+
+.dropdown-header strong {
+    font-size: 0.9rem;
+    color: #fff;
+}
+
+.dropdown-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+}
+
+.dropdown-menu li a, .dropdown-menu li .logout-action {
+  display: block;
+  padding: 10px 16px;
+  color: #ddd;
+  text-decoration: none;
+  font-size: 0.9rem;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dropdown-menu li a:hover, .dropdown-menu li .logout-action:hover {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.dropdown-menu li.separator {
+  height: 1px;
+  background-color: #444;
+  margin: 8px 0;
+}

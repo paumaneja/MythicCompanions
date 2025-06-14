@@ -102,9 +102,6 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard">
-      <button onClick={() => auth.logout()} className="logout-button">
-          Logout
-      </button>
 
       <div className="companion-container">
         {companions.map((companion) => {
