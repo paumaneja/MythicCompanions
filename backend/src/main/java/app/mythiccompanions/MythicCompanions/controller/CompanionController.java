@@ -34,6 +34,18 @@ public class CompanionController {
     }
 
     /**
+     * Endpoint to delete a companion.
+     */
+    @DeleteMapping("/{companionId}")
+    public ResponseEntity<Void> deleteCompanion(
+            @PathVariable Long companionId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        companionService.deleteCompanion(companionId, userDetails);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
      * Endpoint to get all companions for a specific user ID.
      * In a real app, you might get this from the token instead of a path variable
      * to prevent users from seeing other users' companions.

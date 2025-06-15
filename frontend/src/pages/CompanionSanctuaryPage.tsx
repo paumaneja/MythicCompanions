@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import './CompanionSanctuaryPage.css';
 import { isAxiosError } from 'axios';
@@ -36,6 +36,7 @@ const CompanionSanctuaryPage = () => {
   const { id } = useParams<{ id: string }>();
   const [companion, setCompanion] = useState<Companion | null>(null);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [interactionMessage, setInteractionMessage] = useState('');
@@ -120,6 +121,31 @@ const CompanionSanctuaryPage = () => {
       setInteractionMessage(errorMessage);
     }
   };
+
+  const handleDelete = async () => {
+    if (!id) return;
+
+    // Show a confirmation dialog before deleting
+    const isConfirmed = window.confirm(
+        `Are you sure you want to delete ${companion?.name}? This action cannot be undone.`
+    );
+
+    if (isConfirmed) {
+        try {
+            setInteractionMessage('Deleting companion...');
+            await api.delete(`/api/companions/${id}`);
+            // On success, navigate back to the dashboard
+            navigate('/dashboard');
+        } catch (err) {
+            let errorMessage = "Failed to delete companion.";
+            if (isAxiosError(err) && err.response) {
+                errorMessage = err.response.data || errorMessage;
+            }
+            setInteractionMessage(errorMessage);
+            console.error("Failed to delete companion", err);
+        }
+    }
+};
   
   if (loading) return <div className="sanctuary-message">Loading Sanctuary...</div>;
   if (error) return <div className="sanctuary-message error">{error}</div>;
@@ -191,6 +217,9 @@ return (
                 <Link to="/dashboard" className="back-to-dashboard" title="Back to Dashboard">
                     <img src="/icons/back.png" alt="Back" />
                 </Link>
+                <button onClick={handleDelete} className="delete-companion-button" title="Delete Companion">
+                  <img src="/icons/delete.png" alt="Delete" />
+                </button>
                 {currentVideo ? (
                 <video key={currentVideo} width="100%" autoPlay onEnded={() => setCurrentVideo(null)}>
                     <source src={currentVideo} type="video/mp4" />

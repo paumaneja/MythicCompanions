@@ -280,3 +280,32 @@
 .sanctuary-message.error {
   color: red;
 }
+
+.delete-companion-button {
+  position: absolute;
+  top: 20px;
+  right: 20px; /* Positioned on the opposite side of the back button */
+  z-index: 10;
+  background-color: rgba(150, 30, 30, 0.7); /* A dangerous red color */
+  border: 2px solid rgba(255, 100, 100, 0.7);
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.delete-companion-button:hover {
+  background-color: rgba(200, 40, 40, 1);
+  border-color: #ff8a8a;
+  transform: scale(1.1);
+}
+
+.delete-companion-button img {
+  width: 50%;
+  height: 50%;
+  filter: invert(1); /* Makes a dark icon white */
+}

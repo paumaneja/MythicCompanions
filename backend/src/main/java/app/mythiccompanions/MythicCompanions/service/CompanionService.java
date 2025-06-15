@@ -68,6 +68,23 @@ public class CompanionService {
     }
 
     /**
+     * Deletes a companion after verifying ownership.
+     * @param companionId The ID of the companion to delete.
+     * @param userDetails The details of the user making the request.
+     */
+    @Transactional
+    public void deleteCompanion(Long companionId, UserDetails userDetails) {
+        Companion companion = companionRepository.findById(companionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Companion not found with ID: " + companionId));
+
+        if (!companion.getOwner().getUsername().equals(userDetails.getUsername())) {
+            throw new UnauthorizedOperationException("User is not the owner of the companion they are trying to delete.");
+        }
+
+        companionRepository.delete(companion);
+    }
+
+    /**
      * Retrieves all companions for a specific owner.
      * @param ownerId The ID of the owner.
      * @return A list of companion DTOs.
