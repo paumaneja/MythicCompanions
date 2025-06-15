@@ -4,12 +4,15 @@ import app.mythiccompanions.MythicCompanions.dto.CompanionResponseDTO;
 import app.mythiccompanions.MythicCompanions.dto.InventoryItemResponseDTO;
 import app.mythiccompanions.MythicCompanions.dto.MiniGameCompletionRequestDTO;
 import app.mythiccompanions.MythicCompanions.dto.MiniGameRewardResponseDTO;
+import app.mythiccompanions.MythicCompanions.enums.ItemRarity;
 import app.mythiccompanions.MythicCompanions.exception.ResourceNotFoundException;
 import app.mythiccompanions.MythicCompanions.exception.UnauthorizedOperationException;
 import app.mythiccompanions.MythicCompanions.mapper.CompanionMapper;
 import app.mythiccompanions.MythicCompanions.model.Companion;
+import app.mythiccompanions.MythicCompanions.model.Item;
 import app.mythiccompanions.MythicCompanions.model.User;
 import app.mythiccompanions.MythicCompanions.repository.CompanionRepository;
+import app.mythiccompanions.MythicCompanions.repository.ItemRepository;
 import app.mythiccompanions.MythicCompanions.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +30,8 @@ public class MiniGameService {
     private final UserRepository userRepository;
     private final CompanionRepository companionRepository;
     private final InventoryService inventoryService;
+    private final ItemRepository itemRepository;
+    private final Random random = new Random();
 
     @Transactional
     public MiniGameRewardResponseDTO completeMiniGame(UserDetails userDetails, MiniGameCompletionRequestDTO request) {
@@ -39,27 +45,37 @@ public class MiniGameService {
             throw new UnauthorizedOperationException("User is not the owner of this companion.");
         }
 
-        // --- Reward Logic ---
         int score = request.getScore();
         List<InventoryItemResponseDTO> awardedItems = new ArrayList<>();
         String message;
 
-        // Decrease energy for playing
         companion.setEnergy(Math.max(0, companion.getEnergy() - 10));
 
+        // --- REWARD LOGIC ---
+        ItemRarity rewardRarity = null;
         if (score > 90) {
-            message = "Amazing performance! You earned a great reward!";
+            message = "Amazing performance! You earned a RARE reward!";
             companion.setSkill(Math.min(100, companion.getSkill() + 5));
-            // Award a rare item (e.g., item with ID 2, which is Lembas Bread in our DataLoader)
-            awardedItems.add(inventoryService.addItemToInventory(userDetails, 2L, 1));
+            rewardRarity = ItemRarity.RARE;
         } else if (score > 50) {
-            message = "Good job! You earned a reward.";
+            message = "Good job! You earned a COMMON reward.";
             companion.setSkill(Math.min(100, companion.getSkill() + 2));
-            // Award a common item (e.g., item with ID 1, Small Health Potion)
-            awardedItems.add(inventoryService.addItemToInventory(userDetails, 1L, 1));
+            rewardRarity = ItemRarity.COMMON;
         } else {
             message = "Good effort! Keep training to earn better rewards.";
             companion.setSkill(Math.min(100, companion.getSkill() + 1));
+        }
+
+        // If a reward rarity was determined, find a random item of that rarity
+        if (rewardRarity != null) {
+            List<Item> possibleRewards = itemRepository.findByRarity(rewardRarity);
+            if (!possibleRewards.isEmpty()) {
+                // Select a random item from the list
+                Item awardedItem = possibleRewards.get(random.nextInt(possibleRewards.size()));
+                awardedItems.add(inventoryService.addItemToInventory(userDetails, awardedItem.getId(), 1));
+            } else {
+                message += " (But no items of this rarity were found!)";
+            }
         }
 
         Companion updatedCompanion = companionRepository.save(companion);

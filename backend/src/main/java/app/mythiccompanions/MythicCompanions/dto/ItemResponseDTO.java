@@ -1,5 +1,6 @@
 package app.mythiccompanions.MythicCompanions.dto;
 
+import app.mythiccompanions.MythicCompanions.enums.ItemRarity;
 import app.mythiccompanions.MythicCompanions.enums.ItemType;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +15,7 @@ public class ItemResponseDTO {
     private String name;
     private String description;
     private ItemType itemType;
+    private ItemRarity rarity;
     private Integer healthBonus;
     private Integer hungerBonus;
     private Integer energyBonus;

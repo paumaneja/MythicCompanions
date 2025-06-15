@@ -62,6 +62,7 @@ public class CompanionMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .itemType(item.getItemType())
+                .rarity(item.getRarity())
                 .healthBonus(item.getHealthBonus())
                 .hungerBonus(item.getHungerBonus())
                 .energyBonus(item.getEnergyBonus())

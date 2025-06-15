@@ -1,5 +1,6 @@
 package app.mythiccompanions.MythicCompanions.model;
 
+import app.mythiccompanions.MythicCompanions.enums.ItemRarity;
 import app.mythiccompanions.MythicCompanions.enums.ItemType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,10 @@ public class Item {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ItemType itemType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ItemRarity rarity;
 
     // --- Effect Fields (for consumables) ---
     private Integer healthBonus;
