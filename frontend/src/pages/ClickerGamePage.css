@@ -1,0 +1,125 @@
+.clicker-game-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #2b5876, #4e4376);
+  color: white;
+  font-family: system-ui, sans-serif;
+  text-align: center;
+}
+
+.game-idle-container, .game-finished-container, .game-playing-container {
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 90%;
+  max-width: 600px;
+}
+
+h2 {
+  color: #4caf50;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 2.5rem;
+}
+
+.game-idle-container p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+}
+
+.game-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: bold;
+  transition: all 0.2s;
+  margin: 5px;
+}
+
+.game-button:hover {
+  background-color: #5dc061;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.game-button.secondary {
+    background-color: #555;
+}
+.game-button.secondary:hover {
+    background-color: #666;
+}
+
+.game-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
+.game-area {
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
+}
+
+.click-target {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background-color: #ef4444;
+  border: 5px solid #f87171;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.click-target:active {
+  transform: scale(0.9);
+}
+
+.game-finished-container .results-box {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.game-finished-container .result-message {
+    font-style: italic;
+    color: #ffeb3b;
+    font-size: 1.2rem;
+}
+
+.game-finished-container .rewards h3 {
+    color: #4caf50;
+    margin-bottom: 10px;
+}
+
+.game-finished-container .rewards ul {
+    list-style: none;
+    padding: 0;
+}
+.game-finished-container .rewards li {
+    font-size: 1.1rem;
+}
+
+.error-message {
+    color: #ef4444;
+    font-weight: bold;
+}

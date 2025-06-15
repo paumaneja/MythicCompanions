@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import CompanionSanctuaryPage from './pages/CompanionSanctuaryPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import ProtectedLayout from './components/ProtectedLayout';
+import ClickerGamePage from './pages/ClickerGamePage';
 
 function App() {
   return (
@@ -15,13 +16,19 @@ function App() {
 
         {/* --- Protected Routes --- */}
         <Route element={<ProtectedRoute />}>
+          {/* Routes with the global user menu */}
           <Route element={<ProtectedLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/companions/:id" element={<CompanionSanctuaryPage />} />
-            {/* If you add more protected pages, add them here */}
           </Route>
+          
+          {/* Minigame Route. It's inside ProtectedRoute but outside ProtectedLayout 
+          so the game can have its own full-screen layout without the user menu visible. */}
+          <Route path="/companions/:id/play/clicker-game" element={<ClickerGamePage />} />
+
         </Route>
 
+        {/* --- Fallback Route --- */}
         <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

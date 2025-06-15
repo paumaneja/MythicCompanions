@@ -3,8 +3,9 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import './CompanionSanctuaryPage.css';
 import { isAxiosError } from 'axios';
+import MinigamesModal from '../components/MinigamesModal';
 
-// Define interfaces
+// Define interfaces (no changes here)
 interface Item {
   id: number;
   name: string;
@@ -41,6 +42,11 @@ const CompanionSanctuaryPage = () => {
   const [error, setError] = useState('');
   const [interactionMessage, setInteractionMessage] = useState('');
   const [currentVideo, setCurrentVideo] = useState<string | null>(null);
+
+  const [isMinigamesModalOpen, setIsMinigamesModalOpen] = useState(false);
+
+  const handleOpenMinigamesModal = () => setIsMinigamesModalOpen(true);
+  const handleCloseMinigamesModal = () => setIsMinigamesModalOpen(false);
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -124,17 +130,13 @@ const CompanionSanctuaryPage = () => {
 
   const handleDelete = async () => {
     if (!id) return;
-
-    // Show a confirmation dialog before deleting
     const isConfirmed = window.confirm(
         `Are you sure you want to delete ${companion?.name}? This action cannot be undone.`
     );
-
     if (isConfirmed) {
         try {
             setInteractionMessage('Deleting companion...');
             await api.delete(`/api/companions/${id}`);
-            // On success, navigate back to the dashboard
             navigate('/dashboard');
         } catch (err) {
             let errorMessage = "Failed to delete companion.";
@@ -145,7 +147,7 @@ const CompanionSanctuaryPage = () => {
             console.error("Failed to delete companion", err);
         }
     }
-};
+  };
   
   if (loading) return <div className="sanctuary-message">Loading Sanctuary...</div>;
   if (error) return <div className="sanctuary-message error">{error}</div>;
@@ -258,8 +260,17 @@ return (
                         </div>
                     ))}
                 </div>
+                <div className="minigames-launcher">
+                    <button onClick={handleOpenMinigamesModal}>
+                        Mini-Games
+                    </button>
+                </div>
             </div>
         </div>
+        <MinigamesModal 
+            isOpen={isMinigamesModalOpen} 
+            onClose={handleCloseMinigamesModal} 
+        />
     </div>
   );
 };
