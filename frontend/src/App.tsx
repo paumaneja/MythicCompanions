@@ -9,6 +9,8 @@ import ClickerGamePage from './pages/ClickerGamePage';
 import MemoryGamePage from './pages/MemoryGamePage';
 import QuizGamePage from './pages/QuizGamePage';
 import DodgeGamePage from './pages/DodgeGamePage';
+import ProfilePage from './pages/ProfilePage';
+import ChangePasswordPage from './pages/ChangePasswordPage';
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
           <Route element={<ProtectedLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/companions/:id" element={<CompanionSanctuaryPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/change-password" element={<ChangePasswordPage />} />
           </Route>
           
           {/* Minigame Routes */}
