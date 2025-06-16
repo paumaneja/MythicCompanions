@@ -34,10 +34,10 @@ const MinigamesModal = ({ isOpen, onClose }: MinigamesModalProps) => {
             <Link to={`/companions/${companionId}/play/clicker-game`} className="minigame-button">
               Clicker Game
             </Link>
+              <Link to={`/companions/${companionId}/play/memory-game`} className="minigame-button">
+              Memory Game
+            </Link>
             {/* Add buttons for other minigames here in the future */}
-            <button className="minigame-button-disabled" disabled>
-              Memory Game (Coming Soon)
-            </button>
             <button className="minigame-button-disabled" disabled>
               Puzzle Challenge (Coming Soon)
             </button>
