@@ -8,6 +8,7 @@ import ProtectedLayout from './components/ProtectedLayout';
 import ClickerGamePage from './pages/ClickerGamePage';
 import MemoryGamePage from './pages/MemoryGamePage';
 import QuizGamePage from './pages/QuizGamePage';
+import DodgeGamePage from './pages/DodgeGamePage';
 
 function App() {
   return (
@@ -28,7 +29,7 @@ function App() {
           <Route path="/companions/:id/play/clicker-game" element={<ClickerGamePage />} />
           <Route path="/companions/:id/play/memory-game" element={<MemoryGamePage />} />
           <Route path="/companions/:id/play/quiz-game" element={<QuizGamePage />} />
-
+          <Route path="/companions/:id/play/dodge-game" element={<DodgeGamePage />} />
         </Route>
 
         {/* --- Fallback Route --- */}
