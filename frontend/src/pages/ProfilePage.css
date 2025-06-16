@@ -86,3 +86,11 @@
 .profile-button.secondary:hover {
     background-color: #5a6268;
 }
+
+.form-message.error {
+    color: #ef4444;
+}
+
+.form-message.success {
+    color: #4caf50;
+}

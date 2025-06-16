@@ -1,3 +1,5 @@
+/* frontend/src/pages/Dashboard.css */
+
 .dashboard {
   height: 100vh;
   width: 100vw;
@@ -11,125 +13,147 @@
   position: relative;
 }
 
-.dashboard-message {
-    color: white;
-    font-size: 2rem;
-    background-color: rgba(0, 0, 0, 0.5);
-    padding: 20px;
-    border-radius: 10px;
-}
-.dashboard-message.error {
-    color: red;
-}
-
-.logout-button {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  padding: 10px 20px;
-  background-color: #f44336;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-  z-index: 10;
-}
-
-.logout-button:hover {
-  background-color: #d32f2f;
-}
-
-.companion-container {
+/* UPDATED: Container now uses a more robust grid layout with fixed row heights */
+.dashboard-container {
   position: relative;
-  width: 1000px;
-  border: 10px solid rgba(0, 0, 0, 1);
+  width: 1024px;
+  height: 576px;
+  background-color: rgba(0,0,0,0.4);
+  backdrop-filter: blur(5px);
   border-radius: 15px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+  
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.9);
-  max-height: 80vh;
+  /* 1. Force a 3-column layout */
+  grid-template-columns: repeat(3, 1fr); 
+  /* 2. KEY CHANGE: Define the height for all rows. All cards will conform to this. */
+  grid-template-rows: 380px; 
+  /* This will apply to the first row. We add grid-auto-rows for subsequent rows. */
+  grid-auto-rows: 380px;
+
+  gap: 25px;
+  padding: 25px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  border: 2px solid rgba(255, 255, 255, 0.2);
   overflow-y: auto;
 }
 
-/* --- STYLES FOR THE CARDS --- */
-
+/* All cards will now have their height dictated by the grid container */
 .companion-card {
+  /* The explicit height property is no longer needed here */
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  background-color: #f5f5f5;
+  background-color: rgba(245, 245, 245, 0.9);
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 0;
-  padding-bottom: 15px;
-  overflow: hidden;
-  transition: transform 0.2s;
-  min-height: 250px;
+  transition: transform 0.2s, box-shadow 0.2s;
   color: black;
   text-align: center;
+  overflow: hidden; /* Hide any potential overflow from inner content */
+}
+
+/* ... (the rest of the styles remain mostly the same) ... */
+
+.companion-card:not(.creation-card):hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 12px rgba(0,0,0,0.2);
+  cursor: pointer;
 }
 
 .companion-image {
   width: 100%;
-  height: 200px; 
-  object-fit: cover; 
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  margin-bottom: 15px;
+  height: 180px;
+  object-fit: cover;
+  flex-shrink: 0;
 }
 
-.companion-card:hover {
-  transform: scale(1.05);
+.companion-info {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 10px;
 }
 
 .companion-name {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: bold;
-  text-align: center;
   color: #333;
-  margin-top: 0;
+  margin: 0;
+}
+
+.companion-details {
+  font-size: 1rem;
+  color: #555;
+  margin: 0 0 10px 0;
+  text-transform: capitalize;
+}
+
+.stat-bars-summary {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 10px;
+}
+.stat-item-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.stat-label {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #444;
+  width: 75px;
+  text-align: left;
+  text-transform: capitalize;
+}
+.stat-bar-background-summary {
+  flex-grow: 1;
+  height: 12px;
+  background-color: #e0e0e0;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #ccc;
+}
+.stat-bar-fill-summary {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.5s ease-in-out;
+}
+.stat-bar-fill-summary.hunger { background-color: #f97316; }
+.stat-bar-fill-summary.happiness { background-color: #ec4899; }
+.stat-bar-fill-summary.hygiene { background-color: #14b8a6; }
+
+/* Styles for the creation card */
+.creation-card {
+  padding: 20px;
+  justify-content: center;
+  gap: 15px;
+}
+.creation-card .companion-name {
   margin-bottom: 10px;
-  padding: 0 15px;
 }
-
-.companion-card p { 
-    padding: 0 15px; 
-    margin: 0;
-}
-
-
-.companion-card input, .companion-card select {
+.creation-card input, .creation-card select {
   width: 90%;
-  margin: 10px;
+  margin: 0 auto;
   padding: 10px;
   border: 2px solid #4caf50;
   border-radius: 5px;
-  font-size: 16px;
-  box-sizing: border-box;
+  font-size: 1rem;
 }
-
-.companion-type-select {
-    margin-top: 15px !important;
-}
-
-.create-companion-button {
+.creation-card .create-companion-button {
   width: 90%;
-  padding: 10px;
+  margin: 15px auto 0 auto;
+  padding: 12px;
+  font-size: 1rem;
   background-color: #28a745;
   color: white;
   border: none;
   border-radius: 5px;
-  font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s;
-  margin-top: 10px;
 }
-
 .create-companion-button:hover {
   background-color: #218838;
 }

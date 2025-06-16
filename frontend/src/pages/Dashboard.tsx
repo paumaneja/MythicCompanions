@@ -102,8 +102,7 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard">
-
-      <div className="companion-container">
+      <div className="dashboard-container"> {/* UPDATED: Changed class name for clarity */}
         {companions.map((companion) => {
             let imageUrl = '/images/placeholder.png';
             if (companion.speciesAssets) {
@@ -124,38 +123,44 @@ const Dashboard = () => {
             return (
                 <div key={companion.id} className="companion-card" onClick={() => handleCompanionClick(companion.id)}>
                     <img src={imageUrl} alt={companion.speciesName} className="companion-image" />
-                    <h2 className="companion-name">{companion.name}</h2>
-                    <p style={{color:'black'}}>({companion.speciesName})</p>
+                    <div className="companion-info">
+                        <h2 className="companion-name">{companion.name}</h2>
+                        {/* NEW: Added species and universe info */}
+                        <p className="companion-details">{companion.speciesName}</p>
+                        
+                        {/* NEW: Added stat bars */}
+                        <div className="stat-bars-summary">
+                            <div className="stat-item-summary">
+                                <span className="stat-label">Hunger</span>
+                                <div className="stat-bar-background-summary"><div className="stat-bar-fill-summary hunger" style={{ width: `${companion.hunger}%` }}></div></div>
+                            </div>
+                             <div className="stat-item-summary">
+                                <span className="stat-label">Happiness</span>
+                                <div className="stat-bar-background-summary"><div className="stat-bar-fill-summary happiness" style={{ width: `${companion.happiness}%` }}></div></div>
+                            </div>
+                             <div className="stat-item-summary">
+                                <span className="stat-label">Hygiene</span>
+                                <div className="stat-bar-background-summary"><div className="stat-bar-fill-summary hygiene" style={{ width: `${companion.hygiene}%` }}></div></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             );
         })}
         
-        <div className="companion-card">
-          <h2 className="companion-name">Create a New Companion</h2>
-          <input
-            type="text"
-            placeholder="Companion Name"
-            value={newCompanionName}
-            onChange={(e) => setNewCompanionName(e.target.value)}
-          />
-          <select value={selectedUniverse} onChange={handleUniverseChange} className="companion-type-select">
-            <option value="" disabled>1. Select a Universe</option>
-            {universes.map(universe => (
-              <option key={universe} value={universe}>{universe.replace('_', ' ')}</option>
-            ))}
-          </select>
-          <select 
-            value={selectedSpeciesId} 
-            onChange={(e) => setSelectedSpeciesId(e.target.value)} 
-            disabled={!selectedUniverse}
-            className="companion-type-select"
-          >
-            <option value="" disabled>2. Select a Species</option>
-            {filteredSpecies.map(species => (
-              <option key={species.id} value={species.id}>{species.name}</option>
-            ))}
-          </select>
-          <button onClick={handleCreateCompanion} className="create-companion-button">Create Companion</button>
+        {/* The creation card remains the same for now */}
+        <div className="companion-card creation-card">
+            <h2 className="companion-name">Create a New Companion</h2>
+            <input type="text" placeholder="Companion Name" value={newCompanionName} onChange={(e) => setNewCompanionName(e.target.value)} />
+            <select value={selectedUniverse} onChange={handleUniverseChange}>
+              <option value="" disabled>1. Select a Universe</option>
+              {universes.map(universe => <option key={universe} value={universe}>{universe.replace('_', ' ')}</option>)}
+            </select>
+            <select value={selectedSpeciesId} onChange={(e) => setSelectedSpeciesId(e.target.value)} disabled={!selectedUniverse}>
+              <option value="" disabled>2. Select a Species</option>
+              {filteredSpecies.map(species => <option key={species.id} value={species.id}>{species.name}</option>)}
+            </select>
+            <button onClick={handleCreateCompanion} className="create-companion-button">Create</button>
         </div>
       </div>
     </div>
