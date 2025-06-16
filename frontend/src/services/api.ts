@@ -1,17 +1,13 @@
-// src/services/api.ts
 import axios from 'axios';
 
-// Create an Axios instance with the base URL of our backend.
 const api = axios.create({
   baseURL: 'http://localhost:8080',
 });
 
-// Use an interceptor to automatically add the JWT token to every request header.
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
-      // If a token exists, add it to the Authorization header before sending the request.
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
@@ -20,5 +16,30 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+api.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (axios.isAxiosError(error) && error.response) {
+      const { status } = error.response;
+      if (status === 401 || status === 403) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('role');
+
+        const isAuthPage = window.location.pathname === '/' || window.location.pathname === '/register';
+
+        if (!isAuthPage) {
+          console.error("Authentication error on a protected page. Redirecting to login.");
+          window.location.href = '/';
+        }
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 
 export default api;
