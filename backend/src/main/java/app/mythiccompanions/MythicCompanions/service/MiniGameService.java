@@ -51,7 +51,6 @@ public class MiniGameService {
 
         companion.setEnergy(Math.max(0, companion.getEnergy() - 10));
 
-        // --- REWARD LOGIC ---
         ItemRarity rewardRarity = null;
         if (score > 90) {
             message = "Amazing performance! You earned a RARE reward!";
@@ -66,12 +65,14 @@ public class MiniGameService {
             companion.setSkill(Math.min(100, companion.getSkill() + 1));
         }
 
-        // If a reward rarity was determined, find a random item of that rarity
         if (rewardRarity != null) {
+            System.out.println("Searching for items with rarity: " + rewardRarity);
             List<Item> possibleRewards = itemRepository.findByRarity(rewardRarity);
+            System.out.println("Found " + possibleRewards.size() + " items of that rarity.");
+
             if (!possibleRewards.isEmpty()) {
-                // Select a random item from the list
                 Item awardedItem = possibleRewards.get(random.nextInt(possibleRewards.size()));
+                System.out.println("Awarding item: " + awardedItem.getName());
                 awardedItems.add(inventoryService.addItemToInventory(userDetails, awardedItem.getId(), 1));
             } else {
                 message += " (But no items of this rarity were found!)";

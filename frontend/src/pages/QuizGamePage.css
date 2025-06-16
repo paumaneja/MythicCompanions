@@ -1,0 +1,30 @@
+.final-score {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.results-box {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.result-message {
+    font-style: italic;
+    color: #99f2c8;
+    margin-bottom: 15px;
+}
+
+.rewards h3 {
+    margin: 0 0 10px 0;
+    color: #fff;
+}
+
+.rewards ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}

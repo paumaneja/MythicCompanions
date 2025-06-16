@@ -7,6 +7,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import ProtectedLayout from './components/ProtectedLayout';
 import ClickerGamePage from './pages/ClickerGamePage';
 import MemoryGamePage from './pages/MemoryGamePage';
+import QuizGamePage from './pages/QuizGamePage';
 
 function App() {
   return (
@@ -23,10 +24,11 @@ function App() {
             <Route path="/companions/:id" element={<CompanionSanctuaryPage />} />
           </Route>
           
-          {/* Minigame Route. It's inside ProtectedRoute but outside ProtectedLayout 
-          so the game can have its own full-screen layout without the user menu visible. */}
+          {/* Minigame Routes */}
           <Route path="/companions/:id/play/clicker-game" element={<ClickerGamePage />} />
           <Route path="/companions/:id/play/memory-game" element={<MemoryGamePage />} />
+          <Route path="/companions/:id/play/quiz-game" element={<QuizGamePage />} />
+
         </Route>
 
         {/* --- Fallback Route --- */}

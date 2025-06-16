@@ -4,9 +4,11 @@ import app.mythiccompanions.MythicCompanions.enums.ItemRarity;
 import app.mythiccompanions.MythicCompanions.enums.ItemType;
 import app.mythiccompanions.MythicCompanions.enums.Universe;
 import app.mythiccompanions.MythicCompanions.model.Item;
+import app.mythiccompanions.MythicCompanions.model.Question;
 import app.mythiccompanions.MythicCompanions.model.Species;
 import app.mythiccompanions.MythicCompanions.repository.SpeciesRepository;
 import app.mythiccompanions.MythicCompanions.repository.ItemRepository;
+import app.mythiccompanions.MythicCompanions.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -26,6 +28,7 @@ public class DataLoader implements CommandLineRunner {
 
     private final SpeciesRepository speciesRepository;
     private final ItemRepository itemRepository;
+    private final QuestionRepository questionRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -35,6 +38,42 @@ public class DataLoader implements CommandLineRunner {
         if (itemRepository.count() == 0) {
             loadItemData();
         }
+        if (questionRepository.count() == 0) {
+            loadQuestionData();
+        }
+    }
+
+    private void loadQuestionData() {
+        Question q1 = Question.builder()
+                .questionText("What is the name of the planet where Luke Skywalker grew up?")
+                .options(List.of("Coruscant", "Naboo", "Tatooine", "Alderaan"))
+                .correctAnswer("Tatooine")
+                .universe(Universe.STARWARS)
+                .build();
+
+        Question q2 = Question.builder()
+                .questionText("Who is the guardian of the One Ring at the beginning of 'The Fellowship of the Ring'?")
+                .options(List.of("Gandalf", "Frodo Baggins", "Bilbo Baggins", "Elrond"))
+                .correctAnswer("Bilbo Baggins")
+                .universe(Universe.LORD_OF_THE_RINGS)
+                .build();
+
+        Question q3 = Question.builder()
+                .questionText("What is the name of Han Solo's ship?")
+                .options(List.of("Star Destroyer", "X-Wing", "Slave I", "Millennium Falcon"))
+                .correctAnswer("Millennium Falcon")
+                .universe(Universe.STARWARS)
+                .build();
+
+        Question q4 = Question.builder()
+                .questionText("Which race is known for their exceptional archery skills in Middle-earth?")
+                .options(List.of("Dwarves", "Hobbits", "Elves", "Men of Gondor"))
+                .correctAnswer("Elves")
+                .universe(Universe.LORD_OF_THE_RINGS)
+                .build();
+
+        questionRepository.saveAll(List.of(q1, q2, q3, q4));
+        System.out.println("Loaded initial quiz question data into the database.");
     }
 
     private void loadSpeciesData() {
