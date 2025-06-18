@@ -13,28 +13,36 @@
   position: relative;
 }
 
-/* UPDATED: Container now uses a more robust grid layout with fixed row heights */
+.dashboard-message {
+    color: white;
+    font-size: 2rem;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    border-radius: 10px;
+}
+.dashboard-message.error {
+    color: red;
+}
+
+/* --- UPDATED: Styles for the main container, to match Sanctuary's visual container --- */
 .dashboard-container {
+  /* Copied size, shape and position properties */
   position: relative;
   width: 1024px;
-  height: 576px;
-  background-color: rgba(0,0,0,0.4);
+  height: 576px; /* This creates the 16:9 aspect ratio */
+  background-color: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(5px);
   border-radius: 15px;
-  
-  display: grid;
-  /* 1. Force a 3-column layout */
-  grid-template-columns: repeat(3, 1fr); 
-  /* 2. KEY CHANGE: Define the height for all rows. All cards will conform to this. */
-  grid-template-rows: 380px; 
-  /* This will apply to the first row. We add grid-auto-rows for subsequent rows. */
-  grid-auto-rows: 380px;
-
-  gap: 25px;
-  padding: 25px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
   border: 2px solid rgba(255, 255, 255, 0.2);
-  overflow-y: auto;
+  
+  /* Kept grid properties for content layout */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 380px;
+  gap: 25px;
+  padding: 25px;
+  overflow-y: auto; /* Enable vertical scroll */
 }
 
 /* All cards will now have their height dictated by the grid container */

@@ -176,10 +176,6 @@ return (
     <div className="sanctuary-page-wrapper">
         <div className="sanctuary-page-layout">
             <div className="ui-panel">
-                <div className="sanctuary-header">
-                    <h1>{companion.name}'s Sanctuary</h1>
-                    <p>Species: {companion.speciesName} ({companion.universe.replace('_', ' ')})</p>
-                </div>
                 <div className="stats-container">
                     <h2>Stats</h2>
                     <div className="equipped-item">
@@ -242,6 +238,10 @@ return (
                     <button onClick={() => handleInteract('sleep')} className="visual-container-button action-button" title="Sleep"><img src="/icons/sleep.png" alt="Sleep" /></button>
                     <button onClick={() => handleInteract('clean')} className="visual-container-button action-button" title="Clean"><img src="/icons/clean.png" alt="Clean" /></button>
                     <button onClick={() => handleInteract('train')} className="visual-container-button action-button" title="Train"><img src="/icons/train.png" alt="Train" /></button>
+                </div>
+                <div className="sanctuary-header">
+                    <h1>{companion.name}'s Sanctuary</h1>
+                    <p>Species: {companion.speciesName} ({companion.universe.replace('_', ' ')})</p>
                 </div>
                 
                 {interactionMessage && <p className="interaction-feedback">{interactionMessage}</p>}
