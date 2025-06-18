@@ -1,11 +1,13 @@
+// frontend/src/pages/CompanionSanctuaryPage.tsx
+
 import { useEffect, useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import './CompanionSanctuaryPage.css';
 import { isAxiosError } from 'axios';
 import MinigamesModal from '../components/MinigamesModal';
 
-// Define interfaces (no changes here)
+// Interfaces
 interface Item {
   id: number;
   name: string;
@@ -42,11 +44,14 @@ const CompanionSanctuaryPage = () => {
   const [error, setError] = useState('');
   const [interactionMessage, setInteractionMessage] = useState('');
   const [currentVideo, setCurrentVideo] = useState<string | null>(null);
-
   const [isMinigamesModalOpen, setIsMinigamesModalOpen] = useState(false);
 
   const handleOpenMinigamesModal = () => setIsMinigamesModalOpen(true);
   const handleCloseMinigamesModal = () => setIsMinigamesModalOpen(false);
+
+  const handleBackToDashboard = () => {
+    navigate('/dashboard');
+  };
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -170,8 +175,6 @@ const CompanionSanctuaryPage = () => {
 return (
     <div className="sanctuary-page-wrapper">
         <div className="sanctuary-page-layout">
-
-            {/* --- Column 1: Stats Panel --- */}
             <div className="ui-panel">
                 <div className="sanctuary-header">
                     <h1>{companion.name}'s Sanctuary</h1>
@@ -214,14 +217,15 @@ return (
                 </div>
             </div>
 
-            {/* --- Column 2: Main Visual with Icon Buttons --- */}
             <div className="main-visual-container">
-                <Link to="/dashboard" className="back-to-dashboard" title="Back to Dashboard">
+                {/* UPDATED: Buttons now have shared classes */}
+                <button onClick={handleBackToDashboard} className="visual-container-button top-corner-button back-to-dashboard" title="Back to Dashboard">
                     <img src="/icons/back.png" alt="Back" />
-                </Link>
-                <button onClick={handleDelete} className="delete-companion-button" title="Delete Companion">
+                </button>
+                <button onClick={handleDelete} className="visual-container-button top-corner-button delete-companion-button" title="Delete Companion">
                   <img src="/icons/delete.png" alt="Delete" />
                 </button>
+
                 {currentVideo ? (
                 <video key={currentVideo} width="100%" autoPlay onEnded={() => setCurrentVideo(null)}>
                     <source src={currentVideo} type="video/mp4" />
@@ -230,17 +234,19 @@ return (
                 ) : (
                 <img src={idleImageUrl} alt={companion.name} className="companion-main-image" />
                 )}
+                
                 <div className="actions-container-icons">
-                    <button onClick={() => handleInteract('feed')} title="Feed"><img src="/icons/feed.png" alt="Feed" /></button>
-                    <button onClick={() => handleInteract('play')} title="Play"><img src="/icons/play.png" alt="Play" /></button>
-                    <button onClick={() => handleInteract('sleep')} title="Sleep"><img src="/icons/sleep.png" alt="Sleep" /></button>
-                    <button onClick={() => handleInteract('clean')} title="Clean"><img src="/icons/clean.png" alt="Clean" /></button>
-                    <button onClick={() => handleInteract('train')} title="Train"><img src="/icons/train.png" alt="Train" /></button>
+                    {/* UPDATED: Buttons now have shared classes */}
+                    <button onClick={() => handleInteract('feed')} className="visual-container-button action-button" title="Feed"><img src="/icons/feed.png" alt="Feed" /></button>
+                    <button onClick={() => handleInteract('play')} className="visual-container-button action-button" title="Play"><img src="/icons/play.png" alt="Play" /></button>
+                    <button onClick={() => handleInteract('sleep')} className="visual-container-button action-button" title="Sleep"><img src="/icons/sleep.png" alt="Sleep" /></button>
+                    <button onClick={() => handleInteract('clean')} className="visual-container-button action-button" title="Clean"><img src="/icons/clean.png" alt="Clean" /></button>
+                    <button onClick={() => handleInteract('train')} className="visual-container-button action-button" title="Train"><img src="/icons/train.png" alt="Train" /></button>
                 </div>
+                
                 {interactionMessage && <p className="interaction-feedback">{interactionMessage}</p>}
             </div>
 
-            {/* --- Column 3: Inventory Panel --- */}
             <div className="ui-panel">
                 <div className="inventory-container">
                     <h2>Inventory</h2>
