@@ -32,11 +32,12 @@ html, body {
   text-align: center;
 }
 
-h2 {
+.login-container h2 {
   margin-bottom: 0px;
   margin-top: 0px;
-  color: #000000;
+  color: #ffffff;
   font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
 
 form {

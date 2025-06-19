@@ -77,6 +77,9 @@ public class Companion {
      * Stats are capped at 100.
      */
     public void feed() {
+        if (this.getHunger() >= 100) {
+            throw new CompanionInteractionException("Companion is already full.");
+        }
         this.setHunger(Math.min(this.getHunger() + 15, 100));
         this.setHappiness(Math.min(this.getHappiness() + 5, 100));
     }
@@ -87,6 +90,10 @@ public class Companion {
      * Stats are floored at 0.
      */
     public void play() {
+        if (this.getEnergy() < 20) {
+            throw new CompanionInteractionException("Companion is too tired to play.");
+        }
+
         this.setEnergy(Math.max(this.getEnergy() - 20, 0));
         this.setHunger(Math.max(this.getHunger() - 10, 0));
         this.setHappiness(Math.min(this.getHappiness() + 20, 100));
@@ -134,6 +141,9 @@ public class Companion {
         if (this.getCurrentWeapon() == null || this.getCurrentWeapon().isEmpty()) {
             throw new CompanionInteractionException("Cannot train without a weapon equipped.");
         }
+        if (this.getEnergy() < 15) {
+            throw new CompanionInteractionException("Companion is too tired to train.");
+        }
 
         // Training consumes energy but increases skill and a bit of happiness
         this.setEnergy(Math.max(this.getEnergy() - 15, 0));
@@ -145,6 +155,9 @@ public class Companion {
      * Fully restores the companion's hygiene.
      */
     public void clean() {
+        if (this.getHygiene() >= 100) {
+            throw new CompanionInteractionException("Companion is already sparkling clean.");
+        }
         this.setHygiene(100);
         // Cleaning a pet also makes it a little happier.
         this.setHappiness(Math.min(this.getHappiness() + 5, 100));

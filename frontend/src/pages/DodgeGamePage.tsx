@@ -203,7 +203,16 @@ const DodgeGamePage = () => {
         )}
         {gameState === 'playing' && (
           <>
-            <div className="player" style={{ left: playerPositionX, width: PLAYER_WIDTH, height: PLAYER_HEIGHT }} />
+            <img
+              src="/games/ewok_minigame.png"
+              className="player"
+              alt="Player"
+              style={{
+                left: playerPositionX,
+                width: PLAYER_WIDTH,
+                height: PLAYER_HEIGHT,
+              }}
+            />
             {obstaclesToRender.map(o => <div key={o.id} className="obstacle" style={{ left: o.x, top: o.y, width: OBSTACLE_WIDTH, height: OBSTACLE_HEIGHT }} />)}
           </>
         )}

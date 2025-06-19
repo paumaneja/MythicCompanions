@@ -18,7 +18,6 @@
 .player {
   position: absolute;
   bottom: 0;
-  background-color: #61dafb; /* Player is a blue square */
 }
 
 .obstacle {
