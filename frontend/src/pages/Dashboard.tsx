@@ -102,7 +102,7 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard">
-      <div className="dashboard-container"> {/* UPDATED: Changed class name for clarity */}
+      <div className="dashboard-container">
         {companions.map((companion) => {
             let imageUrl = '/images/placeholder.png';
             if (companion.speciesAssets) {

@@ -260,7 +260,6 @@ return (
             </div>
 
             <div className="main-visual-container">
-                {/* UPDATED: Buttons now have shared classes */}
                 <button onClick={handleBackToDashboard} className="visual-container-button top-corner-button back-to-dashboard" title="Back to Dashboard">
                     <img src="/icons/back.png" alt="Back" />
                 </button>
@@ -276,7 +275,6 @@ return (
                 ) : (
                 <img src={idleImageUrl} alt={companion.name} className="companion-main-image" />
                 )}
-                
                 <div className="actions-container-icons">
                     {/* UPDATED: Buttons now have shared classes */}
                     <button onClick={() => handleInteract('feed')} className="visual-container-button action-button" title="Feed"><img src="/icons/feed.png" alt="Feed" /></button>

@@ -10,10 +10,6 @@ html, body {
 }
 
 .login-page {
-  background-image: url("../assets/fons api.webp");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
   height: 100vh;
   width: 100vw;
   display: flex;
