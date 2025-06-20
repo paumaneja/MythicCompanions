@@ -167,17 +167,18 @@ const QuizGamePage = () => {
       case 'idle':
       default:
         return (
-          <div className="quiz-container">
+          <div className="game-intro-container">
             <h2>Lore Quiz</h2>
             {error && <p className="error-message">{error}</p>}
             <p>Test your knowledge! You have {TIME_PER_QUESTION} seconds per question.</p>
-            <button className="quiz-button" onClick={handleStartGame}>Start Quiz</button>
+            <button className="game-button" onClick={handleStartGame}>Start Quiz</button>
+            <button className="game-button secondary" onClick={() => navigate(`/companions/${companionId}`)}>Return to Sanctuary</button>
           </div>
         );
     }
   };
 
-  return <div className="quiz-game-page">{renderGame()}</div>;
+  return <div className="game-page-wrapper">{renderGame()}</div>;
 };
 
 export default QuizGamePage;

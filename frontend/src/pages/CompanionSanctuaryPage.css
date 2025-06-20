@@ -1,58 +1,71 @@
 /* frontend/src/pages/CompanionSanctuaryPage.css */
 
+/* --- Contenidor principal de la pàgina --- */
 .sanctuary-page-wrapper {
     display: flex;
     justify-content: center;
-    align-items: center;
     min-height: 100vh;
-    padding: 20px;
+    padding-top: 6rem;
+    padding-bottom: 2rem;
     box-sizing: border-box;
 }
 
+/* --- LAYOUT PRINCIPAL (MOBILE-FIRST) --- */
 .sanctuary-page-layout {
   display: flex;
-  align-items: stretch;
-  gap: 2vw;
+  flex-direction: column; 
+  gap: 1.5rem;
   width: 100%;
   max-width: 1700px;
-  height: 75vh;
-  max-height: 900px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  box-sizing: border-box;
 }
 
+/* --- Panells d'UI (Stats i Inventari) --- */
 .ui-panel {
-  width: 20%;
-  min-width: 280px;
-  background-color: rgba(45, 45, 45, 0.9);
+  width: 100%;
+  background-color: var(--background-panel, rgba(45, 45, 45, 0.9));
   backdrop-filter: blur(10px);
-  padding: 20px;
-  border-radius: 15px;
-  color: #fff;
+  padding: 1.25rem;
+  border-radius: var(--border-radius, 15px);
+  color: var(--text-color-light, #fff);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
+}
+
+.stats-container, .inventory-container { 
+  display: flex; 
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
 }
 
 .scrollable-content {
-  flex-grow: 1; /* Take up remaining space */
-  overflow-y: auto; /* Enable vertical scroll */
-  min-height: 0; /* Prevents flexbox overflow issues */
-  padding-right: 5px; /* Space for the scrollbar */
+  flex-grow: 1;
+  overflow-y: auto;
+  min-height: 0;
+  padding-right: 5px;
 }
 
+/* --- Contenidor Visual Central --- */
 .main-visual-container {
   position: relative;
-  flex-grow: 1;
-  height: 100%;
+  width: 100%; 
+  aspect-ratio: 4 / 3;
+  max-height: 60vh;
   background-color: #000;
-  border-radius: 15px;
+  border-radius: var(--border-radius, 15px);
   overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
   border: 2px solid rgba(255, 255, 255, 0.2);
+  box-sizing: border-box;
 }
 
 .companion-main-image, .main-visual-container video {
@@ -61,136 +74,113 @@
   object-fit: cover;
 }
 
-/* --- REFACTORED BUTTONS for Main Visual Container --- */
-
-/* 1. Base class for ALL buttons in the visual container */
-.visual-container-button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  padding: 0;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  background: transparent;
-  border: 2px solid transparent; /* Base border for all */
-  overflow: hidden;
-  position: relative;
-}
-
-.visual-container-button:hover {
-  transform: scale(1.1);
-}
-
-.visual-container-button:hover img {
-  transform: scale(1.1);
-}
-
-.visual-container-button img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.2s ease-in-out;
-}
-
-/* 2. Top corner buttons (Back and Delete) */
-.top-corner-button {
-  position: absolute;
-  top: 20px;
-  width: 45px;
-  height: 45px;
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-.back-to-dashboard {
-  left: 20px;
-  border-color: rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-}
-
-.delete-companion-button {
-  right: 20px;
-  background-color: rgba(150, 30, 30, 0.7);
-  border-color: rgba(255, 100, 100, 0.7);
-  border-radius: 10px;
-}
-
-
-
-.back-to-dashboard:hover {
-  background-color: rgba(0, 0, 0, 0.8);
-  border-color: #fff;
-}
-
-.delete-companion-button:hover {
-  background-color: rgba(200, 40, 40, 1);
-  border-color: #ff8a8a;
-}
-
-/* 3. Bottom action buttons (Feed, Play, etc.) */
-.actions-container-icons {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 15px;
-  background-color: rgba(0, 0, 0, 0.5);
-  padding: 10px 20px;
-  border-radius: 20px;
-  backdrop-filter: blur(5px);
-}
-
-.action-button {
-  width: 60px;
-  height: 60px;
-  border-radius: 10px;
-  border-color: rgba(255, 255, 255, 0.7);
-}
-
-.action-button:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  border-color: #fff;
-}
-
-/* --- Other styles --- */
-.sanctuary-header {
-  text-align: center;
-  border-bottom: 1px solid #444;
-  padding-bottom: 15px;
-  flex-shrink: 0; 
-}
 .sanctuary-header {
   position: absolute;
-  top: 20px;
+  top: 1.5rem;
   left: 50%;
   transform: translateX(-50%);
   background-color: rgba(0,0,0,0.7);
   color: #ffeb3b;
-  padding: 8px 30px; /* Increased horizontal padding, adjusted vertical */
+  padding: 0.5rem 1.5rem;
   border-radius: 20px;
   z-index: 10;
   font-weight: bold;
-  white-space: nowrap; /* Prevent the title from breaking into two lines */
+  white-space: nowrap;
+  text-align: center;
 }
-
 .sanctuary-header h1 {
-  font-size: 1.2rem; /* Reduced font size */
+  font-size: 1.1rem;
   line-height: 1;
   margin: 0;
 }
-
-.sanctuary-header p { margin: 2px 0 0; color: #ccc; font-size: 0.8rem; text-align: center; }
-
-.stats-container { 
-  flex-grow: 1; 
-  display: flex;
-  flex-direction: column;
+.sanctuary-header p { 
+  margin: 2px 0 0; 
+  color: #ccc; 
+  font-size: 0.8rem; 
 }
-.stats-container h2, .inventory-container h2 { text-align: center; color: #4caf50; border-bottom: 1px solid #444; padding-bottom: 15px; margin-top: 0; }
-.stats-container ul { list-style: none; padding: 0; }
-.stat-item { margin-bottom: 12px; }
-.stat-info { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem; color: #ddd; padding: 0 2px; }
+
+.visual-container-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  background: transparent;
+  border: 2px solid transparent;
+  overflow: hidden;
+  position: relative;
+}
+.visual-container-button:hover {
+  transform: scale(1.1);
+}
+.visual-container-button img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- CANVI: Posicionament simètric de botons de cantonada --- */
+.top-corner-button {
+  position: absolute;
+  top: 1.5rem;   /* Mateixa distància superior */
+  width: 50px;
+  height: 50px;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.back-to-dashboard {
+  left: 1.5rem;  /* Mateixa distància lateral */
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.delete-companion-button {
+  right: 1.5rem; /* Mateixa distància lateral */
+  background-color: rgba(150, 30, 30, 0.7);
+  border-color: rgba(255, 100, 100, 0.7);
+}
+.back-to-dashboard:hover, .delete-companion-button:hover {
+  transform: scale(1.1); /* Afegim efecte hover consistent */
+}
+
+
+/* --- CANVI: Distribució i centrat de botons d'acció --- */
+.actions-container-icons {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%; /* Ocupa més amplada del contenidor pare */
+  max-width: 450px; /* Però amb un límit per a pantalles molt amples */
+  
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Distribueix els botons uniformement */
+
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 1rem; /* Padding vertical i horitzontal més equilibrat */
+  border-radius: 20px;
+  backdrop-filter: blur(5px);
+  box-sizing: border-box;
+}
+.action-button {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  border-color: rgba(255, 255, 255, 0.7);
+}
+.action-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: #fff;
+  transform: scale(1.1); /* Efecte hover consistent */
+}
+
+/* --- Estils interns de panells (la resta es manté igual) --- */
+.stats-container h2, .inventory-container h2 { 
+  text-align: center; color: var(--primary-color, #4caf50); border-bottom: 1px solid #444; padding-bottom: 1rem; margin-top: 0; margin-bottom: 1rem; flex-shrink: 0;
+}
+.stats-container ul { list-style: none; padding: 0; margin: 0; }
+.stat-item { margin-bottom: 0.75rem; }
+.stat-info { display: flex; justify-content: space-between; margin-bottom: 0.3rem; font-size: 0.9rem; color: #ddd; padding: 0 2px; }
 .stat-bar-background { width: 100%; height: 18px; background-color: #333; border-radius: 9px; border: 1px solid #555; overflow: hidden; }
 .stat-bar-fill { height: 100%; border-radius: 9px; transition: width 0.5s ease-in-out; box-shadow: inset 0 -2px 2px rgba(0,0,0,0.2); }
 .stat-bar-fill.health { background-color: #ef4444; }
@@ -199,25 +189,65 @@
 .stat-bar-fill.happiness { background-color: #ec4899; }
 .stat-bar-fill.hygiene { background-color: #14b8a6; }
 .stat-bar-fill.skill { background-color: #a855f7; }
-.equipped-item { background-color: #4a5d4b; color: #e0f0e0; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center; border: 1px solid #4caf50; }
-.interaction-feedback { position: absolute; bottom: 130px; left: 50%; transform: translateX(-50%); background-color: rgba(0,0,0,0.7); color: #ffeb3b; padding: 8px 16px; border-radius: 20px; z-index: 10; font-weight: bold; }
-.inventory-container { 
-  display: flex; 
-  flex-direction: column;
-  flex-grow: 1;
-  min-height: 0;
-}
+
+.equipped-item { background-color: #4a5d4b; color: #e0f0e0; padding: 0.75rem; border-radius: 5px; margin-top: 1rem; text-align: center; border: 1px solid var(--primary-color, #4caf50); }
+.interaction-feedback { position: absolute; bottom: 8rem; left: 50%; transform: translateX(-50%); background-color: rgba(0,0,0,0.7); color: #ffeb3b; padding: 0.5rem 1rem; border-radius: 20px; z-index: 10; font-weight: bold; }
+
 .inventory-container > p { flex-grow: 1; display: flex; justify-content: center; align-items: center; color: #888; }
-.inventory-item { background-color: #3a3a3a; border-radius: 5px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+.inventory-item { background-color: #3a3a3a; border-radius: 5px; padding: 1rem; margin-bottom: 0.75rem; display: flex; flex-direction: column; align-items: stretch; gap: 0.75rem; }
+.inventory-item .item-info { flex-grow: 1; }
 .inventory-item .item-info strong { font-size: 1.1rem; }
 .inventory-item .item-info p { font-size: 0.9rem; color: #ccc; margin: 5px 0 0; }
-.inventory-item button { background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; transition: background-color 0.2s; }
+.inventory-item button { background-color: #007bff; color: white; border: none; padding: 0.75rem 1rem; border-radius: 5px; cursor: pointer; transition: background-color 0.2s; width: 100%; box-sizing: border-box; }
 .inventory-item button:hover:not(:disabled) { background-color: #0056b3; }
 .inventory-item button:disabled { background-color: #555; cursor: not-allowed; }
 .equip-button { background-color: #f0ad4e !important; }
 .equip-button:hover:not(:disabled) { background-color: #ec971f !important; }
+
+.minigames-launcher { margin-top: auto; padding-top: 1rem; border-top: 1px solid #444; display: flex; justify-content: center; flex-shrink: 0; }
+.minigames-launcher button { width: 100%; padding: 0.75rem; background-color: #f0ad4e; color: #1c1c1c; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; transition: all 0.2s ease-in-out; }
+.minigames-launcher button:hover { background-color: #ec971f; transform: scale(1.02); }
+
 .sanctuary-message { color: white; font-size: 2rem; background-color: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px; text-align: center; }
 .sanctuary-message.error { color: red; }
-.minigames-launcher { margin-top: 20px; padding-top: 20px; border-top: 1px solid #444; display: flex; justify-content: center; }
-.minigames-launcher button { width: 100%; padding: 12px; background-color: #f0ad4e; color: #1c1c1c; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; transition: all 0.2s ease-in-out; }
-.minigames-launcher button:hover { background-color: #ec971f; transform: scale(1.02); }
+
+
+/* --- MEDIA QUERY PER A PANTALLES GRANS (DESKTOP) --- */
+@media (min-width: 1024px) {
+  .sanctuary-page-wrapper {
+    padding: 2rem; 
+    align-items: center;
+  }
+  
+  .sanctuary-page-layout {
+    padding-left: 0;
+    padding-right: 0;
+    flex-direction: row;
+    align-items: stretch;
+    height: 80vh; 
+    max-height: 900px;
+  }
+
+  .ui-panel {
+    width: 20%;
+    min-width: 280px;
+  }
+
+  .main-visual-container {
+    flex-grow: 1;
+    height: 100%;
+    aspect-ratio: unset;
+    max-height: none;
+  }
+
+  .top-corner-button, .action-button {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .main-visual-container .actions-container-icons {
+    width: 70%;
+    max-width: 700px;
+    padding: 1.2rem;
+  }
+}

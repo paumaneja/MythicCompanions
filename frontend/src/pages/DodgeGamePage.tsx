@@ -185,69 +185,74 @@ const DodgeGamePage = () => {
     }, 50);
   };
 
-  return (
-    <div className="dodge-game-page">
-      <div className="game-area" style={{ width: GAME_WIDTH, height: GAME_HEIGHT }}>
-        {(gameState === 'playing' || gameState === 'gameOver') && (
+const renderContent = () => {
+    if (gameState === 'idle') {
+      return (
+        <div className="game-page-wrapper"> {/* Canvi de classe */}
+          <div className="game-intro-container">
+            <h2>Dodge Challenge</h2>
+            <p>Use the Arrow Keys or A/D to move and dodge the falling objects!</p>
+            <button className="game-button" onClick={startGame}>Start Game</button> {/* Canvi de classe */}
+            <button className="game-button secondary" onClick={() => navigate(`/companions/${companionId}`)}>Return to Sanctuary</button>
+          </div>
+        </div>
+      );
+    }
+
+    // Pantalla de Joc / Game Over
+    return (
+      <div className="dodge-game-page">
+        <div className="game-area" style={{ width: GAME_WIDTH, height: GAME_HEIGHT }}>
           <div className="game-ui">
             <span>Vides: {lives < 0 ? 0 : lives}</span>
             <span>Temps: {time}s</span>
           </div>
-        )}
-        {gameState === 'idle' && (
-          <div className="game-overlay">
-            <h2>Dodge Challenge</h2>
-            <p>Use the Arrow Keys or A/D to move and dodge the falling objects!</p>
-            <button className="game-button-dodge" onClick={startGame}>Start Game</button>
-          </div>
-        )}
-        {gameState === 'playing' && (
-          <>
-            <img
-              src="/games/ewok_minigame.png"
-              className="player"
-              alt="Player"
-              style={{
-                left: playerPositionX,
-                width: PLAYER_WIDTH,
-                height: PLAYER_HEIGHT,
-              }}
-            />
-            {obstaclesToRender.map(o => <div key={o.id} className="obstacle" style={{ left: o.x, top: o.y, width: OBSTACLE_WIDTH, height: OBSTACLE_HEIGHT }} />)}
-          </>
-        )}
-{gameState === 'gameOver' && (
-          <div className="game-overlay">
-            <h2>Game Over</h2>
-            <p>You survived for {time} seconds!</p>
-            
-            <div className="results-box">
-              {error && <p className="error-message">{error}</p>}
-              {!error && !gameResult && <p>Calculating rewards...</p>}
-              {gameResult && (
-                  <>
-                      <p className="result-message">"{gameResult.message}"</p>
-                      {gameResult.itemsAwarded?.length > 0 && (
-                          <div className="rewards">
-                              <h3>Rewards:</h3>
-                              <ul>
-                                  {gameResult.itemsAwarded.map((reward, index) => (
-                                      <li key={index}>{reward.item.name} (x{reward.quantity})</li>
-                                  ))}
-                              </ul>
-                          </div>
-                      )}
-                  </>
-              )}
-            </div>
+          
+          {gameState === 'playing' && (
+            <>
+              <img
+                src="/games/ewok_minigame.png"
+                className="player"
+                alt="Player"
+                style={{ left: playerPositionX, width: PLAYER_WIDTH, height: PLAYER_HEIGHT }}
+              />
+              {obstaclesToRender.map(o => <div key={o.id} className="obstacle" style={{ left: o.x, top: o.y, width: OBSTACLE_WIDTH, height: OBSTACLE_HEIGHT }} />)}
+            </>
+          )}
 
-            <button className="game-button-dodge" onClick={startGame}>Play Again</button>
-            <button className="game-button-dodge secondary" onClick={() => navigate(`/companions/${companionId}`)}>Back to Sanctuary</button>
-          </div>
-        )}
+          {gameState === 'gameOver' && (
+            <div className="game-overlay"> {/* Ara .game-overlay només s'usa aquí */}
+              <h2>Game Over</h2>
+              <p>You survived for {time} seconds!</p>
+              <div className="results-box">
+                {error && <p className="error-message">{error}</p>}
+                {!error && !gameResult && <p>Calculating rewards...</p>}
+                {gameResult && (
+                  <>
+                    <p className="result-message">"{gameResult.message}"</p>
+                    {gameResult.itemsAwarded?.length > 0 && (
+                      <div className="rewards">
+                        <h3>Rewards:</h3>
+                        <ul>
+                          {gameResult.itemsAwarded.map((reward, index) => (
+                            <li key={index}>{reward.item.name} (x{reward.quantity})</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+              <button className="game-button-dodge" onClick={startGame}>Play Again</button>
+              <button className="game-button-dodge secondary" onClick={() => navigate(`/companions/${companionId}`)}>Back to Sanctuary</button>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
+
+  return renderContent();
 };
 
 export default DodgeGamePage;

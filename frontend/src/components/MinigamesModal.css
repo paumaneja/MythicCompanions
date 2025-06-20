@@ -12,6 +12,7 @@
   align-items: center;
   z-index: 2000; /* Ensure it's on top of everything */
   backdrop-filter: blur(5px);
+  padding: 1rem;
 }
 
 .modal-content {
@@ -20,10 +21,11 @@
   border-radius: 15px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  width: 90%;
+  width: 100%;
   max-width: 500px;
   animation: fadeIn 0.3s ease-out;
   color: #fff;
+  box-sizing: border-box;
 }
 
 @keyframes fadeIn {
@@ -83,7 +85,7 @@
 .minigame-button, .minigame-button-disabled {
     display: block;
     width: 100%;
-    padding: 15px;
+    padding: 1rem;
     border-radius: 8px;
     border: 2px solid #4caf50;
     font-size: 1.1rem;
@@ -92,6 +94,7 @@
     text-decoration: none;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
+    box-sizing: border-box;
 }
 
 .minigame-button {

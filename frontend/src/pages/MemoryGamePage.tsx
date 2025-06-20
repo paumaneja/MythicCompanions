@@ -139,10 +139,11 @@ const MemoryGamePage = () => {
   const renderBoard = () => {
     if (gameState === 'idle') {
       return (
-        <div className="game-intro">
+        <div className="game-intro-container">
           <h2>Memory Challenge</h2>
           <p>Find all the matching pairs with the fewest moves!</p>
-          <button className="game-button-mem" onClick={setupGame}>Start Game</button>
+          <button className="game-button" onClick={setupGame}>Start Game</button>
+          <button className="game-button secondary" onClick={() => navigate(`/companions/${companionId}`)}>Return to Sanctuary</button>
         </div>
       );
     }
@@ -201,7 +202,7 @@ const MemoryGamePage = () => {
   };
 
   return (
-    <div className="memory-game-page">
+    <div className="game-page-wrapper">
       {renderBoard()}
     </div>
   );

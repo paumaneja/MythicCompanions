@@ -1,3 +1,74 @@
+/* Estils unificats per a la pàgina de Quiz */
+
+/* Contenidor principal de la pàgina del joc */
+.game-page-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 1rem;
+  box-sizing: border-box;
+  font-family: system-ui, sans-serif;
+  text-align: center;
+  color: white;
+}
+
+/* Contenidor de la pantalla d'inici i del joc */
+.game-intro-container,
+.quiz-container {
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 90%;
+  max-width: 600px;
+}
+
+.game-intro-container h2,
+.quiz-container h2 {
+  color: var(--primary-color, #4caf50);
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 2.5rem;
+}
+
+.game-intro-container p,
+.quiz-container p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+/* Estils unificats per als botons */
+.game-button {
+  background-color: var(--primary-color, #4caf50);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: bold;
+  transition: all 0.2s;
+  margin: 5px;
+}
+
+.game-button:hover {
+  background-color: var(--primary-color-hover, #5dc061);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.game-button.secondary {
+    background-color: #555;
+}
+.game-button.secondary:hover {
+    background-color: #666;
+}
+
+/* Estils específics del joc de Quiz que ja tenies */
 .final-score {
     font-size: 1.2rem;
     font-weight: bold;
@@ -27,4 +98,37 @@
     list-style: none;
     padding: 0;
     margin: 0;
+}
+
+/* Estils per als botons dins del quiz actiu */
+.quiz-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+.timer {
+  font-weight: bold;
+}
+.question-text {
+  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+}
+.answer-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+.answer-button {
+  width: 100%;
+  padding: 1rem;
+  background-color: #3e4c59;
+  border: 1px solid #566f86;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.answer-button:hover {
+  background-color: #566f86;
 }

@@ -1,28 +1,76 @@
-.dodge-game-page {
+/* Estils unificats per a la pàgina de Dodge */
+
+/* Contenidor principal de la pàgina del joc */
+.game-page-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100vw;
-  height: 100vh;
-  background-color: #111;
+  min-height: 100vh;
+  padding: 1rem;
+  box-sizing: border-box;
   font-family: system-ui, sans-serif;
+  text-align: center;
+  color: white;
 }
 
+/* Contenidor de la pantalla d'inici */
+.game-intro-container {
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 90%;
+  max-width: 600px;
+}
+
+.game-intro-container h2 {
+  color: var(--primary-color, #4caf50);
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 2.5rem;
+}
+
+.game-intro-container p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+/* Estils unificats per als botons */
+.game-button {
+  background-color: var(--primary-color, #4caf50);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: bold;
+  transition: all 0.2s;
+  margin: 5px;
+}
+
+.game-button:hover {
+  background-color: var(--primary-color-hover, #5dc061);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.game-button.secondary {
+    background-color: #555;
+}
+.game-button.secondary:hover {
+    background-color: #666;
+}
+
+/* Estils específics del joc Dodge que ja tenies */
 .game-area {
   position: relative;
   background-color: #282c34;
   overflow: hidden;
   border: 3px solid #61dafb;
-}
-
-.player {
-  position: absolute;
-  bottom: 0;
-}
-
-.obstacle {
-  position: absolute;
-  background-color: #ff6961; /* Obstacles are red squares */
 }
 
 .game-overlay {
@@ -51,6 +99,7 @@
     margin-bottom: 30px;
 }
 
+/* Per als botons de "Game Over" fem servir una classe diferent per no entrar en conflicte */
 .game-button-dodge {
   background-color: #61dafb;
   color: #111;
@@ -61,9 +110,34 @@
   font-size: 1.2rem;
   font-weight: bold;
   transition: all 0.2s;
+  margin: 5px;
 }
-
 .game-button-dodge:hover {
     background-color: #88e3ff;
     transform: scale(1.05);
+}
+.game-button-dodge.secondary {
+    background-color: #6c757d;
+    color: white;
+}
+.game-button-dodge.secondary:hover {
+    background-color: #5a6268;
+}
+
+.player, .obstacle, .game-ui {
+    position: absolute;
+}
+.player { bottom: 0; }
+.obstacle { background-color: #ff6961; }
+.game-ui {
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: space-between;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-shadow: 1px 1px 3px black;
+    z-index: 10;
 }
