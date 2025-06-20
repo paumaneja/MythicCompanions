@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -63,6 +64,15 @@ public class UserController {
             @RequestParam("profileImage") MultipartFile file) {
 
         UserProfileResponseDTO updatedProfile = userService.storeProfilePicture(userDetails, file);
+        return ResponseEntity.ok(updatedProfile);
+    }
+
+    /**
+     * Removes the current user's profile picture.
+     */
+    @DeleteMapping("/me/profile-picture")
+    public ResponseEntity<UserProfileResponseDTO> deleteProfilePicture(@AuthenticationPrincipal UserDetails userDetails) {
+        UserProfileResponseDTO updatedProfile = userService.deleteProfilePicture(userDetails);
         return ResponseEntity.ok(updatedProfile);
     }
 }

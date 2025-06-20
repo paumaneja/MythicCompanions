@@ -13,7 +13,6 @@ interface UserProfile {
 
 const ProfilePage = () => {
   const navigate = useNavigate();
-  // Obtenim les dades i la funció d'actualització del context
   const { userProfile, updateUserProfile } = useAuth();
 
   const [email, setEmail] = useState('');
@@ -89,6 +88,21 @@ const ProfilePage = () => {
       });
   };
 
+const handleImageDelete = async () => {
+    setMessage('Deleting image...');
+    try {
+        const response = await api.delete<UserProfile>('/api/users/me/profile-picture');
+        updateUserProfile(response.data);
+        setMessage('Image deleted successfully!');
+    } catch (error) { // La variable 'error' ara sí que s'utilitza
+        if (isAxiosError(error) && error.response) {
+            setMessage(error.response.data.message || 'Failed to delete image.');
+        } else {
+            setMessage('An unexpected error occurred while deleting the image.');
+        }
+    }
+};
+
   if (loading || !userProfile) {
     return (
       <div className="profile-page-container">
@@ -115,6 +129,11 @@ const ProfilePage = () => {
             <button type="button" className="profile-button secondary" onClick={() => fileInputRef.current?.click()}>
               Choose Image
             </button>
+            {userProfile.profileImagePath && !selectedFile && (
+              <button type="button" className="profile-button danger" onClick={handleImageDelete}>
+                Delete Image
+              </button>
+            )}
             {selectedFile && (
               <button type="button" className="profile-button" onClick={handleImageUpload}>
                 Save Image

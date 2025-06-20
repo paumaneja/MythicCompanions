@@ -73,15 +73,43 @@ public class UserService {
      */
     @Transactional
     public UserProfileResponseDTO storeProfilePicture(UserDetails userDetails, MultipartFile file) {
-        String fileName = fileStorageService.storeFile(file);
-
         User user = findUserByDetails(userDetails);
 
-        user.setProfileImagePath(fileName);
+        String oldFileName = user.getProfileImagePath();
+        if (oldFileName != null && !oldFileName.isEmpty()) {
+            fileStorageService.deleteFile(oldFileName);
+        }
+
+        String newFileName = fileStorageService.storeFile(file);
+
+        user.setProfileImagePath(newFileName);
 
         User updatedUser = userRepository.save(user);
 
         return mapUserToProfileResponse(updatedUser);
+    }
+
+    /**
+     * Delete the user's profile picture.
+     * @param userDetails The authenticated user.
+     * @return User profile updated with new image path / User actual profile.
+     */
+    @Transactional
+    public UserProfileResponseDTO deleteProfilePicture(UserDetails userDetails) {
+        User user = findUserByDetails(userDetails);
+        String fileName = user.getProfileImagePath();
+
+        if (fileName != null && !fileName.isEmpty()) {
+            // 1. Esborra l'arxiu del disc
+            fileStorageService.deleteFile(fileName);
+            // 2. Elimina la referència a la base de dades
+            user.setProfileImagePath(null);
+            User updatedUser = userRepository.save(user);
+            return mapUserToProfileResponse(updatedUser);
+        }
+
+        // Si no hi ha imatge, simplement retornem el perfil actual
+        return mapUserToProfileResponse(user);
     }
 
 

@@ -25,7 +25,6 @@ public class FileStorageService {
         this.fileStorageLocation = Paths.get("user-content").toAbsolutePath().normalize();
 
         try {
-            // Assegura't que el directori existeix. Si no, crea'l.
             Files.createDirectories(this.fileStorageLocation);
         } catch (Exception ex) {
             throw new RuntimeException("Could not create the directory where the uploaded files will be stored.", ex);
@@ -83,6 +82,20 @@ public class FileStorageService {
             }
         } catch (MalformedURLException ex) {
             throw new RuntimeException("File not found " + fileName, ex);
+        }
+    }
+
+    /**
+     * Esborra un arxiu del sistema de fitxers.
+     * @param fileName El nom de l'arxiu a esborrar.
+     */
+    public void deleteFile(String fileName) {
+        try {
+            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+            // Esborra l'arxiu només si existeix per evitar errors.
+            Files.deleteIfExists(filePath);
+        } catch (IOException ex) {
+            throw new RuntimeException("Could not delete file " + fileName, ex);
         }
     }
 }

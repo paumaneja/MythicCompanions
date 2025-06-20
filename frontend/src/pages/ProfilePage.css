@@ -124,3 +124,10 @@
   margin-top: 1.5rem; /* Espai respecte al que hi hagi a sobre */
   width: 100%;
 }
+
+.profile-button.danger {
+    background-color: #dc3545;
+}
+.profile-button.danger:hover {
+    background-color: #c82333;
+}
