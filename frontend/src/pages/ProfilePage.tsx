@@ -1,10 +1,9 @@
-// frontend/src/pages/ProfilePage.tsx
-
 import { useState, useEffect, type FormEvent, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import api from '../services/api';
 import './ProfilePage.css';
+import { useAuth } from '../hooks/useAuth';
 
 interface UserProfile {
   username: string;
@@ -14,29 +13,23 @@ interface UserProfile {
 
 const ProfilePage = () => {
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<UserProfile>({ username: '', email: '', profileImagePath: null });
+  // Obtenim les dades i la funció d'actualització del context
+  const { userProfile, updateUserProfile } = useAuth();
+
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
-
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-// Carregar el perfil inicial
   useEffect(() => {
-    api.get<UserProfile>('/api/users/me')
-      .then(response => {
-        setProfile(response.data);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error("Failed to fetch profile", error);
-        setMessage('Could not load your profile.');
-        setLoading(false);
-      });
-  }, []);
+    if (userProfile) {
+      setEmail(userProfile.email);
+      setLoading(false);
+    }
+  }, [userProfile]);
 
-  // Crear una previsualització quan se selecciona un arxiu
   useEffect(() => {
     if (!selectedFile) {
       setPreview(null);
@@ -53,15 +46,6 @@ const ProfilePage = () => {
     }
   };
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setProfile(prevProfile => ({
-      ...prevProfile,
-      [name]: value,
-    }));
-  };
-  
-  // Funció per pujar la imatge
   const handleImageUpload = async () => {
     if (!selectedFile) return;
 
@@ -73,7 +57,8 @@ const ProfilePage = () => {
       const response = await api.post<UserProfile>('/api/users/me/upload-picture', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      setProfile(response.data);
+      // AQUEST ÉS EL CANVI CLAU:
+      updateUserProfile(response.data); // Actualitzem l'estat global!
       setSelectedFile(null);
       setMessage('Image updated successfully!');
     } catch (error) {
@@ -89,8 +74,10 @@ const ProfilePage = () => {
     e.preventDefault();
     setMessage('');
 
-    api.put('/api/users/me', { email: profile.email })
-      .then(() => {
+    api.put('/api/users/me', { email: email })
+      .then((response) => {
+        // També actualitzem el context si l'email canvia
+        updateUserProfile(response.data);
         setMessage('Profile updated successfully!');
       })
       .catch(error => {
@@ -102,7 +89,7 @@ const ProfilePage = () => {
       });
   };
 
-  if (loading) {
+  if (loading || !userProfile) {
     return (
       <div className="profile-page-container">
         <div className="profile-form-container">
@@ -112,9 +99,9 @@ const ProfilePage = () => {
     );
   }
 
-  const profileImageUrl = profile.profileImagePath
-    ? `http://localhost:8080/user-content/${profile.profileImagePath}`
-    : '/icons/user-profile-default.png'; // Un avatar per defecte
+  const profileImageUrl = userProfile.profileImagePath
+    ? `http://localhost:8080/user-content/${userProfile.profileImagePath}`
+    : '/icons/user-profile-default.png';
 
   return (
     <div className="profile-page-container">
@@ -139,24 +126,23 @@ const ProfilePage = () => {
         <form id="profile-form" onSubmit={handleEmailSubmit} className="profile-form">
           <div className="form-group">
             <label htmlFor="username">Username</label>
-            <input type="text" id="username" name="username" value={profile.username} readOnly />
+            <input type="text" id="username" name="username" value={userProfile.username} readOnly />
           </div>
           <div className="form-group">
             <label htmlFor="email">Email</label>
-            <input type="email" id="email" name="email" value={profile.email} onChange={handleEmailChange} required />
+            <input type="email" id="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
         </form>
 
         {message && <p className="form-message">{message}</p>}
 
         <div className="profile-actions">
-            <button type="submit" form="profile-form" className="profile-button">
-              Save Changes
-            </button>
-            {/* CANVI 3: El Link ara és un botó que navega a la pàgina anterior */}
-            <button type="button" className="profile-button secondary" onClick={() => navigate(-1)}>
-                Back
-            </button>
+          <button type="submit" form="profile-form" className="profile-button">
+            Save Changes
+          </button>
+          <button type="button" className="profile-button secondary" onClick={() => navigate(-1)}>
+            Back
+          </button>
         </div>
       </div>
     </div>

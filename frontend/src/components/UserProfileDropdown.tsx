@@ -2,37 +2,18 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import './UserProfileDropdown.css';
-import api from '../services/api';
-
-interface UserProfile {
-    username: string;
-    profileImagePath: string | null;
-}
 
 const UserProfileDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { logout, userId } = useAuth();
+  // Obtenim el perfil i la funció de logout directament del context
+  const { userProfile, logout } = useAuth(); 
   const dropdownRef = useRef<HTMLDivElement>(null);
-  
-  const [userProfile, setUserProfile] = useState<UserProfile>({ username: 'User', profileImagePath: null });
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
   };
-
-  // Carregar dades de l'usuari quan s'obre el menú
-  useEffect(() => {
-    if (isOpen && userId) {
-      api.get<UserProfile>(`/api/users/me`)
-        .then(response => {
-          setUserProfile(response.data);
-        })
-        .catch(error => {
-          console.error("Failed to fetch user profile", error);
-        });
-    }
-  }, [isOpen, userId]);
-
+  
+  // Aquest useEffect només gestiona el tancament del menú en fer clic a fora
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -45,14 +26,13 @@ const UserProfileDropdown = () => {
     };
   }, []);
 
-  const profileImageUrl = userProfile.profileImagePath
+  const profileImageUrl = userProfile?.profileImagePath
     ? `http://localhost:8080/user-content/${userProfile.profileImagePath}`
     : null;
 
   return (
     <div className="user-profile-dropdown" ref={dropdownRef}>
       <button onClick={handleToggle} className="profile-button" aria-label="User menu">
-        {/* RENDERITZACIÓ CONDICIONAL: Imatge de l'usuari o icona per defecte */}
         {profileImageUrl ? (
           <img src={profileImageUrl} alt="User Profile" className="profile-avatar" />
         ) : (
@@ -66,7 +46,7 @@ const UserProfileDropdown = () => {
         <div className="dropdown-menu">
           <div className="dropdown-header">
             <p>Signed in as</p>
-            <strong>{userProfile.username}</strong>
+            <strong>{userProfile?.username || 'User'}</strong>
           </div>
           <ul>
             <li><Link to="/profile" onClick={() => setIsOpen(false)}>My Profile</Link></li>
