@@ -45,10 +45,12 @@ const DodgeGamePage = () => {
     const [lives, setLives] = useState(STARTING_LIVES);
     const [time, setTime] = useState(0);
 
-    // --- NUEVO: Dimensiones y escala dinámicas ---
+    // --- Dimensiones y escala dinámicas ---
     const [gameDimensions, setGameDimensions] = useState({ width: DESIGN_WIDTH, height: DESIGN_HEIGHT });
     const [scaleFactor, setScaleFactor] = useState(1);
     const [playerPositionX, setPlayerPositionX] = useState(DESIGN_WIDTH / 2 - DESIGN_PLAYER_WIDTH / 2);
+
+    const [isTouchDevice, setIsTouchDevice] = useState(false);
 
     const [gameResult, setGameResult] = useState<GameResult | null>(null);
     const [error, setError] = useState('');
@@ -64,6 +66,11 @@ const DodgeGamePage = () => {
     const lastSpawnTime = useRef(0);
     const animationFrameId = useRef<number | null>(null);
 
+    // NOU: Detectar si és un dispositiu tàctil al carregar la pàgina
+    useEffect(() => {
+        setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+    }, []);
+
     // --- NUEVO: Hook para medir el contenedor y establecer dimensiones ---
     useEffect(() => {
         const measureContainer = () => {
@@ -71,7 +78,7 @@ const DodgeGamePage = () => {
                 const containerWidth = gameAreaRef.current.clientWidth;
                 const newScaleFactor = containerWidth / DESIGN_WIDTH;
                 const newHeight = DESIGN_HEIGHT * newScaleFactor;
-
+                
                 setGameDimensions({ width: containerWidth, height: newHeight });
                 setScaleFactor(newScaleFactor);
                 playerX.current = containerWidth / 2;
@@ -79,11 +86,16 @@ const DodgeGamePage = () => {
             }
         };
 
-        // Medimos al inicio y si cambia el tamaño de la ventana (aunque el juego se reiniciará)
         measureContainer();
-        window.addEventListener('resize', measureContainer);
+
+        // NOU: Només escoltem el 'resize' si no estem jugant
+        if (gameState !== 'playing') {
+            window.addEventListener('resize', measureContainer);
+        }
+
+        // La funció de neteja s'executa quan el component es desmunta o `gameState` canvia
         return () => window.removeEventListener('resize', measureContainer);
-    }, []);
+    }, [gameState]);
 
     // --- Game Loop (actualizado con lógica responsiva) ---
     const gameLoop = useCallback((timestamp: number) => {
@@ -142,8 +154,6 @@ const DodgeGamePage = () => {
     }, [gameDimensions, scaleFactor]);
 
     const startGame = () => {
-        // ... (El resto de la lógica de `startGame`, `useEffect`s y `renderContent` se mantiene muy similar)
-        // Solo nos aseguramos de que al reiniciar, todo se base en las nuevas dimensiones.
         setGameState('idle');
         setTimeout(() => {
             currentLives.current = STARTING_LIVES;
@@ -151,7 +161,6 @@ const DodgeGamePage = () => {
             setTime(0);
             obstaclesRef.current = [];
             setObstaclesToRender([]);
-            // Reinicia la posición del jugador al centro del contenedor actual
             playerX.current = gameDimensions.width / 2 - (DESIGN_PLAYER_WIDTH * scaleFactor) / 2;
             setPlayerPositionX(playerX.current);
             obstacleSpeed.current = DESIGN_INITIAL_OBSTACLE_SPEED * scaleFactor;
@@ -199,6 +208,15 @@ const DodgeGamePage = () => {
         }
     }, [gameState, time, companionId]);
 
+    // Funcions per gestionar els controls tàctils
+    const handleControlPress = (direction: 'ArrowLeft' | 'ArrowRight') => {
+        keysPressed.current[direction] = true;
+    };
+
+    const handleControlRelease = (direction: 'ArrowLeft' | 'ArrowRight') => {
+        keysPressed.current[direction] = false;
+    };
+
     // Keyboard listeners
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => { keysPressed.current[e.key] = true; };
@@ -231,72 +249,99 @@ const DodgeGamePage = () => {
         const OBSTACLE_HEIGHT = DESIGN_OBSTACLE_HEIGHT * scaleFactor;
 
         return (
-            <div className= "dodge-game-page" >
-                <div 
-                    ref={ gameAreaRef }
-                    className = "game-area"
-                    style = {{ height: gameDimensions.height }} // La altura se establece dinámicamente
-                >
-                    <div className="game-ui" >
-                        <span>Vides: { lives < 0 ? 0 : lives } </span>
-                        < span > Temps: { time } s </span>
-                    </div>
-
-                    {gameState === 'playing' && (
-                        <>
-                            <img
-                                src="/games/ewok_minigame.png"
-                                className = "player"
-                                alt = "Player"
-                                style = {{
-                                    left: playerPositionX,
-                                    width: PLAYER_WIDTH,
-                                    height: PLAYER_HEIGHT
-                                }}
-                            />
-                            {obstaclesToRender.map(o =>
-                                <div 
-                                    key={ o.id } 
-                                    className = "obstacle" 
-                                    style = {{
-                                        left: o.x,
-                                        top: o.y,
-                                        width: OBSTACLE_WIDTH,
-                                        height: OBSTACLE_HEIGHT
-                                    }} 
-                                />
-                            )}
-                        </>
-                    )}
-
-                    {gameState === 'gameOver' && (
-                        <div className="game-overlay">
-                            <h2>Game Over </h2>
-                            <p> You survived for { time } seconds! </p>
-                            <div className = "results-box">
-                                {error && <p className= "error-message">{error}</p>}
-                                {!error && !gameResult && <p>Calculating rewards...</p>}
-                                {gameResult && (
-                                    <>
-                                        <p className="result-message" > "{gameResult.message}" </p>
-                                        {gameResult.itemsAwarded?.length > 0 && (
-                                            <div className="rewards" >
-                                                <h3>Rewards: </h3>
-                                                <ul>
-                                                    {gameResult.itemsAwarded.map((reward, index) => (
-                                                        <li key= { index } > { reward.item.name }(x{ reward.quantity }) </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        )}
-                                    </>
-                                )}
-                            </div>
-                            <button className = "game-button-dodge" onClick = {startGame}>Play Again</button>
-                            <button className = "game-button-dodge secondary" onClick = {() => navigate(`/companions/${companionId}`)}> Back to Sanctuary </button>
+            <div className="dodge-game-container">
+                <div className="dodge-game-page">
+                    <div 
+                        ref={gameAreaRef} 
+                        className="game-area"
+                        style={{ height: gameDimensions.height }}
+                    >
+                        <div className="game-ui">
+                            <span>Lives: {lives < 0 ? 0 : lives}</span>
+                            <span>Time: {time}s</span>
                         </div>
-                    )}
+
+                        {gameState === 'playing' && (
+                            <>
+                                <img
+                                    src="/games/ewok_minigame.png"
+                                    className="player"
+                                    alt="Player"
+                                    style={{
+                                        left: playerPositionX,
+                                        width: PLAYER_WIDTH,
+                                        height: PLAYER_HEIGHT
+                                    }}
+                                />
+                                {obstaclesToRender.map(o =>
+                                    <div 
+                                        key={o.id} 
+                                        className="obstacle" 
+                                        style={{
+                                            left: o.x,
+                                            top: o.y,
+                                            width: OBSTACLE_WIDTH,
+                                            height: OBSTACLE_HEIGHT
+                                        }} 
+                                    />
+                                )}
+                            </>
+                        )}
+                         {gameState === 'gameOver' && (
+                            <div className="game-overlay">
+                                <h2>Game Over</h2>
+                                <p>You survived {time} seconds!</p>
+                                <div className="results-box">
+                                    {error && <p className="error-message">{error}</p>}
+                                    {!error && !gameResult && <p>Calculating rewards...</p>}
+                                    {gameResult && (
+                                        <>
+                                            <p className="result-message">"{gameResult.message}"</p>
+                                            {gameResult.itemsAwarded?.length > 0 && (
+                                                <div className="rewards">
+                                                    <h3>Rewards:</h3>
+                                                    <ul>
+                                                        {gameResult.itemsAwarded.map((reward, index) => (
+                                                            <li key={index}>{reward.item.name} (x{reward.quantity})</li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            )}
+                                        </>
+                                    )}
+                                </div>
+                                <button className="game-button-dodge" onClick={startGame}>Play again</button>
+                                <button className="game-button-dodge secondary" onClick={() => navigate(`/companions/${companionId}`)}>Back to Sanctuary</button>
+                            </div>
+                        )}
+                    </div>
                 </div>
+
+                {/* Conditional rendering of mobile controls */}
+                {isTouchDevice && gameState === 'playing' && (
+                    <div className="mobile-controls-container">
+                        <div 
+                            className="control-button left"
+                            onMouseDown={() => handleControlPress('ArrowLeft')}
+                            onMouseUp={() => handleControlRelease('ArrowLeft')}
+                            onTouchStart={() => handleControlPress('ArrowLeft')}
+                            onTouchEnd={() => handleControlRelease('ArrowLeft')}
+                            onContextMenu={(e) => e.preventDefault()}
+                        >
+                            <span>&#9664;</span> {/* Fletxa esquerra */}
+                        </div>
+                        <div 
+                            className="control-button right"
+                            onMouseDown={() => handleControlPress('ArrowRight')}
+                            onMouseUp={() => handleControlRelease('ArrowRight')}
+                            onTouchStart={() => handleControlPress('ArrowRight')}
+                            onTouchEnd={() => handleControlRelease('ArrowRight')}
+                            onContextMenu={(e) => e.preventDefault()}
+                        >
+                            <span>&#9654;</span> {/* Fletxa dreta */}
+                        </div>
+                    </div>
+                )}
             </div>
         );
     };

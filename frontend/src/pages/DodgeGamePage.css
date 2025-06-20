@@ -152,3 +152,45 @@
     text-shadow: 1px 1px 3px black;
     z-index: 10;
 }
+
+.dodge-game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 1rem; /* Espai entre el joc i els controls */
+}
+
+
+/* Estils per al contenidor dels controls mòbils */
+.mobile-controls-container {
+    display: flex;
+    width: 100%;
+    max-width: 400px; /* Limitem l'amplada dels controls en pantalles grans */
+    height: 80px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 40px;
+    overflow: hidden;
+    user-select: none; /* Evita que el text es seleccioni */
+    -webkit-user-select: none; /* Per a Safari */
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.control-button {
+    flex: 1; /* Ocupa la meitat de l'espai */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 2.5rem; /* Fletxes grans i fàcils de prémer */
+    transition: background-color 0.1s ease;
+    cursor: pointer;
+}
+
+.control-button:active {
+    background-color: rgba(97, 218, 251, 0.5); /* Feedback visual en prémer */
+}
+
+.control-button.left {
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
