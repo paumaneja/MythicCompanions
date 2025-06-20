@@ -65,12 +65,23 @@
     background-color: #666;
 }
 
-/* Estils específics del joc Dodge que ja tenies */
+.dodge-game-page {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
 .game-area {
   position: relative;
   background-color: #282c34;
   overflow: hidden;
   border: 3px solid #61dafb;
+  width: 100%;
+  margin: 0 auto;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+  border-radius: 10px;
 }
 
 .game-overlay {
