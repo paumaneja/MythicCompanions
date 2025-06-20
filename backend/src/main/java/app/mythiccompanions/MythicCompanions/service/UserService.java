@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +22,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final FileStorageService fileStorageService;
 
     /**
      * Retrieves the profile information for the currently authenticated user.
@@ -42,10 +44,7 @@ public class UserService {
     @Transactional
     public UserProfileResponseDTO updateUserProfile(UserDetails userDetails, UserUpdateRequestDTO request) {
         User user = findUserByDetails(userDetails);
-
-        // Update the fields from the request
         user.setEmail(request.getEmail());
-
         User updatedUser = userRepository.save(user);
         return mapUserToProfileResponse(updatedUser);
     }
@@ -59,18 +58,30 @@ public class UserService {
     @Transactional
     public void changePassword(UserDetails userDetails, ChangePasswordRequestDTO request) {
         User user = findUserByDetails(userDetails);
-
-        // 1. Verify that the current password matches the one in the database
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw new BadCredentialsException("Incorrect current password.");
         }
-
-        // 2. Encode the new password
-        String newPasswordEncoded = passwordEncoder.encode(request.getNewPassword());
-
-        // 3. Update the user's password and save
-        user.setPassword(newPasswordEncoded);
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
+    }
+
+    /**
+     * Save the user's profile picture.
+     * @param userDetails The authenticated user.
+     * @param file The uploaded image file.
+     * @return User profile updated with new image path.
+     */
+    @Transactional
+    public UserProfileResponseDTO storeProfilePicture(UserDetails userDetails, MultipartFile file) {
+        String fileName = fileStorageService.storeFile(file);
+
+        User user = findUserByDetails(userDetails);
+
+        user.setProfileImagePath(fileName);
+
+        User updatedUser = userRepository.save(user);
+
+        return mapUserToProfileResponse(updatedUser);
     }
 
 
@@ -86,6 +97,7 @@ public class UserService {
                 .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
+                .profileImagePath(user.getProfileImagePath())
                 .build();
     }
 }

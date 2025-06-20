@@ -35,6 +35,7 @@ public class SecurityConfig {
                         authRequest
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers("/user-content/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/species").authenticated()
                                 .anyRequest().authenticated()
                 )

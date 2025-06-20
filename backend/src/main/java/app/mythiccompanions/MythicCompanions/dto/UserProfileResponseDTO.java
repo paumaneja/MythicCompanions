@@ -9,4 +9,5 @@ public class UserProfileResponseDTO {
     private Long id;
     private String username;
     private String email;
+    private String profileImagePath;
 }

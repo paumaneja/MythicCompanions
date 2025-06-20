@@ -1,5 +1,3 @@
-// backend/src/main/java/app/mythiccompanions/MythicCompanions/controller/UserController.java
-
 package app.mythiccompanions.MythicCompanions.controller;
 
 import app.mythiccompanions.MythicCompanions.dto.ChangePasswordRequestDTO;
@@ -11,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/users")
@@ -50,5 +49,20 @@ public class UserController {
         userService.changePassword(userDetails, request);
         // On success, return a 200 OK with no body.
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Receives the profile image uploaded from the frontend.
+     * @param userDetails The authenticated user.
+     * @param file The image file. The name "profileImage" must match the FormData of the frontend.
+     * @return The user profile updated.
+     */
+    @PostMapping("/me/upload-picture")
+    public ResponseEntity<UserProfileResponseDTO> uploadProfilePicture(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam("profileImage") MultipartFile file) {
+
+        UserProfileResponseDTO updatedProfile = userService.storeProfilePicture(userDetails, file);
+        return ResponseEntity.ok(updatedProfile);
     }
 }

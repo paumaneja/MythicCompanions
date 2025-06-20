@@ -39,6 +39,8 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    private String profileImagePath;
+
     // This establishes the other side of the relationship: one user can have many companions.
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Companion> companions = new ArrayList<>();

@@ -94,3 +94,33 @@
 .form-message.success {
     color: #4caf50;
 }
+
+.profile-picture-section {
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile-picture {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--primary-color, #4caf50);
+  background-color: #444;
+}
+
+.profile-picture-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.profile-actions {
+  display: flex;
+  justify-content: center; /* Centra els botons */
+  gap: 1rem; /* Espai entre botons */
+  margin-top: 1.5rem; /* Espai respecte al que hi hagi a sobre */
+  width: 100%;
+}
