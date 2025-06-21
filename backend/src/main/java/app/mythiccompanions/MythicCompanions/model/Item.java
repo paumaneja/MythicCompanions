@@ -43,4 +43,7 @@ public class Item {
     private Integer hungerBonus;
     private Integer energyBonus;
     private Integer happinessBonus;
+
+    @Builder.Default
+    private boolean curesSickness = false;
 }

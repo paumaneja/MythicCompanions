@@ -137,13 +137,11 @@ public class InventoryService {
             throw new UnauthorizedOperationException("User is not the owner of this companion.");
         }
 
-        if ("Antidote".equals(itemToUse.getName())) {
+        if (itemToUse.isCuresSickness()) {
             if (companion.isSick()) {
                 companion.setSick(false);
-                // Optional: give a small happiness boost for being cured
                 companion.setHappiness(Math.min(100, companion.getHappiness() + 10));
             } else {
-                // Prevent using antidote on a healthy companion
                 throw new CompanionInteractionException("This companion is not sick.");
             }
         }
