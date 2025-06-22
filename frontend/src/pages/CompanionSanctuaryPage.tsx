@@ -317,7 +317,8 @@ return (
                     <button
                         onClick={() => handleInteract('train')}
                         className="visual-container-button action-button"
-                        title="Train"
+                        title={!isWeaponEquipped ? "You must equip a weapon to train" : "Train"}
+                        disabled={!isWeaponEquipped}
                     >
                         <img src="/icons/train.png" alt="Train" />
                     </button>
