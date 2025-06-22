@@ -216,6 +216,8 @@ const CompanionSanctuaryPage = () => {
     }
   }
 
+  const isWeaponEquipped = companion.equippedGear?.item.itemType === 'WEAPON';
+
 return (
     <div className="sanctuary-page-wrapper">
         <div className="sanctuary-page-layout">
@@ -276,12 +278,49 @@ return (
                 <img src={idleImageUrl} alt={companion.name} className="companion-main-image" />
                 )}
                 <div className="actions-container-icons">
-                    {/* UPDATED: Buttons now have shared classes */}
-                    <button onClick={() => handleInteract('feed')} className="visual-container-button action-button" title="Feed"><img src="/icons/feed.png" alt="Feed" /></button>
-                    <button onClick={() => handleInteract('play')} className="visual-container-button action-button" title="Play"><img src="/icons/play.png" alt="Play" /></button>
-                    <button onClick={() => handleInteract('sleep')} className="visual-container-button action-button" title="Sleep"><img src="/icons/sleep.png" alt="Sleep" /></button>
-                    <button onClick={() => handleInteract('clean')} className="visual-container-button action-button" title="Clean"><img src="/icons/clean.png" alt="Clean" /></button>
-                    <button onClick={() => handleInteract('train')} className="visual-container-button action-button" title="Train"><img src="/icons/train.png" alt="Train" /></button>
+                    <button
+                        onClick={() => handleInteract('feed')}
+                        className="visual-container-button action-button"
+                        title={isWeaponEquipped ? "Unequip your weapon to perform this action" : "Feed"}
+                        disabled={isWeaponEquipped}
+                    >
+                        <img src="/icons/feed.png" alt="Feed" />
+                    </button>
+                    
+                    <button
+                        onClick={() => handleInteract('play')}
+                        className="visual-container-button action-button"
+                        title={isWeaponEquipped ? "Unequip your weapon to perform this action" : "Play"}
+                        disabled={isWeaponEquipped}
+                    >
+                        <img src="/icons/play.png" alt="Play" />
+                    </button>
+
+                    <button
+                        onClick={() => handleInteract('sleep')}
+                        className="visual-container-button action-button"
+                        title={isWeaponEquipped ? "Unequip your weapon to perform this action" : "Sleep"}
+                        disabled={isWeaponEquipped}
+                    >
+                        <img src="/icons/sleep.png" alt="Sleep" />
+                    </button>
+                    
+                    <button
+                        onClick={() => handleInteract('clean')}
+                        className="visual-container-button action-button"
+                        title={isWeaponEquipped ? "Unequip your weapon to perform this action" : "Clean"}
+                        disabled={isWeaponEquipped}
+                    >
+                        <img src="/icons/clean.png" alt="Clean" />
+                    </button>
+
+                    <button
+                        onClick={() => handleInteract('train')}
+                        className="visual-container-button action-button"
+                        title="Train"
+                    >
+                        <img src="/icons/train.png" alt="Train" />
+                    </button>
                 </div>
                 <div className="sanctuary-header">
                     <h1>{companion.name}'s Sanctuary</h1>

@@ -250,4 +250,17 @@
     max-width: 700px;
     padding: 1.2rem;
   }
+
+  .action-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none; /* Evita l'efecte de 'hover' */
+  background-color: transparent; /* Evita canvis de color */
+}
+
+  .action-button:disabled:hover {
+    background-color: rgba(255, 255, 255, 0); /* Mantenim el fons transparent al passar el cursor */
+    border-color: rgba(255, 255, 255, 0.7); /* Mantenim el color del borde */
+}
+
 }
